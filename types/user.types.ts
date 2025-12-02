@@ -1,11 +1,19 @@
-export interface User {
+import { Types } from "mongoose";
+
+export interface IUser {
   _id: string;
-  Fullname: string;
-  Email: string;
-  Password: string;
-  ProfilePicture?: string;
-  Provider?: string;
-  ProviderId?: string;
-  CreatedAt: Date;
-  UpdatedAt: Date;
+  fullname: string;
+  email: string;
+  password: string;
+  profilePicture?: string;
+  provider?: string;
+  providerId?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface IUserImage {
+  userId: Types.ObjectId;
+  bussinessLogo: string;
+  signature: string;
 }
