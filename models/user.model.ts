@@ -10,7 +10,7 @@ const UserSchema = new mongoose.Schema<IUser>(
       unique: true,
       match: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
     },
-    password: { type: String, required: false, minlength: 8, maxlength: 50 },
+    password: { type: String, required: false, minlength: 8 },
     profilePicture: { type: String, required: false },
     provider: { type: String, required: false },
     providerId: { type: String, required: false },
