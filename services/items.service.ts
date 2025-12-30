@@ -1,4 +1,4 @@
-import { ItemForm } from "@/components/Item/DialogBox";
+import { ItemForm } from "@/components/Item/ItemDialogBox";
 
 const baseUrl =
   process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000/api/";

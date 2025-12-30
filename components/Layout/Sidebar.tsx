@@ -53,7 +53,7 @@ const items = [
   },
   {
     title: "Clients",
-    url: "/clients",
+    url: "/client",
     icon: Users,
   },
   {

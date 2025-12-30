@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import PersonalDetail from "@/models/userDetail.model";
+import { cookies } from "next/headers";
+import jwt from "jsonwebtoken";
 
 export async function GET(request: NextRequest) {
   try {
@@ -32,8 +34,96 @@ export async function POST(request: NextRequest) {
   try {
     await dbConnect();
 
-    const body = await request.json();
-    const userDetail = await PersonalDetail.create(body);
+    const {
+      type,
+      name,
+      phoneNumber,
+      email,
+      website,
+      cin,
+      gstin,
+      addressLine1,
+      addressLine2,
+      city,
+      state,
+      country,
+      postalCode,
+    } = await request.json();
+    if (
+      type === undefined ||
+      !name ||
+      !phoneNumber ||
+      !email ||
+      !addressLine1 ||
+      !city ||
+      !state ||
+      !country ||
+      !postalCode
+    ) {
+      return NextResponse.json(
+        { success: false, error: "Missing required fields" },
+        { status: 400 }
+      );
+    }
+    const token = (await cookies()).get("access_token")?.value;
+
+    if (!token) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+    const payload = jwt.verify(token, process.env.JWT_SECRET!) as {
+      userId: string;
+    };
+    if (!payload.userId) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
+    if (type === "userDetail") {
+      const existingDetail = await PersonalDetail.findOne({
+        userId: payload.userId,
+        type: "userDetail",
+      });
+      if (existingDetail) {
+        const updatedDetail = await PersonalDetail.findByIdAndUpdate(
+          existingDetail._id,
+          {
+            name,
+            phoneNumber,
+            email,
+            website,
+            cin,
+            gstin,
+            addressLine1,
+            addressLine2,
+            city,
+            state,
+            country,
+            postalCode,
+          },
+          { new: true }
+        );
+        return NextResponse.json(
+          { success: true, data: updatedDetail },
+          { status: 200 }
+        );
+      }
+    }
+
+    const userDetail = await PersonalDetail.create({
+      userId: payload.userId,
+      type,
+      name,
+      phoneNumber,
+      email,
+      website,
+      cin,
+      gstin,
+      addressLine1,
+      addressLine2,
+      city,
+      state,
+      country,
+      postalCode,
+    });
 
     return NextResponse.json(
       { success: true, data: userDetail },
