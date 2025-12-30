@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 export interface IItem {
+  _id?: mongoose.Types.ObjectId;
   userId: mongoose.Types.ObjectId;
   productNo: string;
   productName: string;

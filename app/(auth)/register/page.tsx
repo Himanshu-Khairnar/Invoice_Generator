@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
-import { useRouter } from 'next/navigation'
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { signUp } from "@/services/auth";
+import { signUp } from "@/services/auth.service";
 
 const schema = z
   .object({
@@ -29,13 +29,13 @@ const schema = z
   })
   .refine((data) => data.password === data.confirm_password, {
     message: "Passwords do not match",
-    path: ["confirm_password"], 
+    path: ["confirm_password"],
   });
 
 type SignupForm = z.infer<typeof schema>;
 
 export default function RegisterPage() {
-  const router = useRouter()
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
   const {
@@ -47,13 +47,17 @@ export default function RegisterPage() {
   });
 
   const onSubmit = async (data: SignupForm) => {
-    if(data.password !== data.confirm_password) {
+    if (data.password !== data.confirm_password) {
       return;
     }
     setIsLoading(true);
-    const userData =await signUp({fullname: data.name, email: data.email, password: data.password});
+    const userData = await signUp({
+      fullname: data.name,
+      email: data.email,
+      password: data.password,
+    });
     console.log(userData.data);
-    router.push('/homepage');
+    router.push("/homepage");
     setIsLoading(false);
   };
 
@@ -61,14 +65,15 @@ export default function RegisterPage() {
     <div className="flex min-h-screen items-center justify-center bg-muted/40 p-4">
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader className="space-y-1 text-center">
-          <CardTitle className="text-2xl font-bold">Create an account</CardTitle>
+          <CardTitle className="text-2xl font-bold">
+            Create an account
+          </CardTitle>
           <CardDescription>
             Enter your details below to create your account
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            
             {/* Name Field */}
             <div className="space-y-2">
               <Label htmlFor="name">Full Name</Label>
@@ -106,7 +111,9 @@ export default function RegisterPage() {
                 className={errors.password ? "border-red-500" : ""}
               />
               {errors.password && (
-                <p className="text-sm text-red-500">{errors.password.message}</p>
+                <p className="text-sm text-red-500">
+                  {errors.password.message}
+                </p>
               )}
             </div>
 
@@ -143,17 +150,25 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          <Button variant="outline" className="w-full" type="button" onClick={()=>window.location.href="/api/auth/google"}>
-              <GoogleIcon className="mr-2 h-4 w-4" />
+          <Button
+            variant="outline"
+            className="w-full"
+            type="button"
+            onClick={() => (window.location.href = "/api/auth/google")}
+          >
+            <GoogleIcon className="mr-2 h-4 w-4" />
             Google
           </Button>
         </CardContent>
-        
+
         {/* 6. Footer Link */}
         <CardFooter className="flex justify-center">
           <p className="text-sm text-muted-foreground">
             Already have an account?{" "}
-            <Link href="/login" className="font-medium text-primary hover:underline">
+            <Link
+              href="/login"
+              className="font-medium text-primary hover:underline"
+            >
               Sign In
             </Link>
           </p>

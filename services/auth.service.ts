@@ -23,7 +23,8 @@ export const login = async  ({email, password}: {email: string, password: string
             headers:{   
                 'Content-Type':'application/json'
             },
-            body:JSON.stringify({email,password})});
+            body:JSON.stringify({email,password})
+        });
         if(!res.ok){
             throw new Error('Failed to login user');
         }
