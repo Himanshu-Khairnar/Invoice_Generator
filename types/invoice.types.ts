@@ -13,6 +13,7 @@ export interface IInvoiceProduct {
 }
 
 export interface IInvoice {
+  _id?: Types.ObjectId; 
   userId: Types.ObjectId;
   userImageId?: Types.ObjectId;
   userDetailId: Types.ObjectId;
