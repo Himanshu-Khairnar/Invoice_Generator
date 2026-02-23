@@ -8,7 +8,10 @@ import jwt from "jsonwebtoken";
 export async function GET(request: NextRequest) {
   try {
     await dbConnect();
-    const token = (await cookies()).get("access_token")?.value;
+    const token =
+      request.headers.get("x-access-token") ||
+      request.cookies.get("access_token")?.value ||
+      (await cookies()).get("access_token")?.value;
 
     if (!token) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
@@ -39,7 +42,10 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     await dbConnect();
-    const token = (await cookies()).get("access_token")?.value;
+    const token =
+      request.headers.get("x-access-token") ||
+      request.cookies.get("access_token")?.value ||
+      (await cookies()).get("access_token")?.value;
 
     if (!token) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });

@@ -8,12 +8,22 @@ export async function GET(request: NextRequest) {
   try {
     await dbConnect();
 
+    const token =
+      request.headers.get("x-access-token") ||
+      request.cookies.get("access_token")?.value ||
+      (await cookies()).get("access_token")?.value;
+    if (!token) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+    const payload = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string };
+    if (!payload.userId) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
     const { searchParams } = new URL(request.url);
-    const userId = searchParams.get("userId");
     const type = searchParams.get("type");
 
-    const filter: any = {};
-    if (userId) filter.userId = userId;
+    const filter: any = { userId: payload.userId };
     if (type) filter.type = type;
 
     const userDetails = await PersonalDetail.find(filter);
@@ -65,7 +75,10 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-    const token = (await cookies()).get("access_token")?.value;
+    const token =
+      request.headers.get("x-access-token") ||
+      request.cookies.get("access_token")?.value ||
+      (await cookies()).get("access_token")?.value;
 
     if (!token) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });

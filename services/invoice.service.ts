@@ -1,21 +1,19 @@
 const baseUrl =
   process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000/api/";
 
-export const getInvoices = async (cookieHeader?: string) => {
+export const getInvoices = async (token?: string) => {
   const headers: HeadersInit = {
     "Content-Type": "application/json",
   };
 
-  if (cookieHeader) {
-    // Forward cookies when rendering on the server
-    // so API routes can authenticate
-    headers.Cookie = cookieHeader;
+  if (token) {
+    headers["x-access-token"] = token;
   }
 
   const res = await fetch(`${baseUrl}invoice`, {
     cache: "no-store",
     headers,
-    credentials: cookieHeader ? undefined : "include",
+    credentials: token ? undefined : "include",
   });
 
   if (!res.ok) {
@@ -70,6 +68,23 @@ export const updateInvoice = async (invoiceId: string, data: any) => {
 
   if (!res.ok) {
     throw new Error("Failed to update invoice");
+  }
+
+  return res.json();
+};
+
+export const createInvoice = async (data: any) => {
+  const res = await fetch(`${baseUrl}invoice`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify(data),
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to create invoice");
   }
 
   return res.json();

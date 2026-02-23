@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
+import { Loader2, FileText } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
@@ -63,13 +63,22 @@ export default function RegisterPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-muted/40 p-4">
-      <Card className="w-full max-w-md shadow-lg">
+      <div className="w-full max-w-md space-y-6">
+        <div className="flex flex-col items-center gap-2">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+            <FileText size={20} strokeWidth={2.5} />
+          </div>
+          <span className="text-xl font-bold tracking-tight">
+            Invoice<span className="opacity-60">Flow</span>
+          </span>
+        </div>
+      <Card className="w-full shadow-lg">
         <CardHeader className="space-y-1 text-center">
           <CardTitle className="text-2xl font-bold">
             Create an account
           </CardTitle>
           <CardDescription>
-            Enter your details below to create your account
+            Enter your details below to get started
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -169,11 +178,12 @@ export default function RegisterPage() {
               href="/login"
               className="font-medium text-primary hover:underline"
             >
-              Sign In
+              Sign in
             </Link>
           </p>
         </CardFooter>
       </Card>
+      </div>
     </div>
   );
 }

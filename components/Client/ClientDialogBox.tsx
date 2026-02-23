@@ -17,8 +17,9 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useRef } from "react";
-import { Plus } from "lucide-react";
+import { Plus, User, MapPin, Globe, CreditCard } from "lucide-react";
 import { postUserDetail } from "@/services/userDetail.service";
+import { Separator } from "@/components/ui/separator";
 
 const schema = z.object({
   name: z
@@ -88,14 +89,11 @@ export default function ClientDialogBox() {
   });
 
   const onSubmit = async (data: ClientForm) => {
-    console.log(data);
     try {
       const response = await postUserDetail({...data,type:"clientDetail"});
       if (response) {    
         closeRef.current?.click();
         window.location.reload();
-      } else {
-        console.error("Failed to create client");
       }
     } catch (error) {
       console.error("Error creating client:", error);
@@ -105,159 +103,131 @@ export default function ClientDialogBox() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="default">
-          <Plus /> Add Client
+        <Button className="gap-2">
+          <Plus className="h-4 w-4" /> Add Client
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[650px] max-h-[90vh] overflow-y-auto p-0">
         <form onSubmit={handleSubmit(onSubmit)}>
-          <DialogHeader>
-            <DialogTitle>Add Client</DialogTitle>
+          <DialogHeader className="p-6 pb-2">
+            <DialogTitle className="text-2xl">Add New Client</DialogTitle>
             <DialogDescription>
-              Add a new client to your client list
+              Fill in the client details to add them to your database.
             </DialogDescription>
           </DialogHeader>
 
-          <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label>Client Name *</Label>
-              <Input {...register("name")} placeholder="Enter client name" />
-              {errors.name && (
-                <p className="text-sm text-red-500">{errors.name.message}</p>
-              )}
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="grid gap-2">
-                <Label>Phone Number *</Label>
-                <Input {...register("phoneNumber")} placeholder="9876543210" />
-                {errors.phoneNumber && (
-                  <p className="text-sm text-red-500">
-                    {errors.phoneNumber.message}
-                  </p>
-                )}
+          <div className="px-6 py-4 space-y-6">
+            {/* Basic Info */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 text-sm font-semibold text-primary">
+                <User className="h-4 w-4" />
+                <span>Basic Information</span>
               </div>
+              <Separator />
+              <div className="grid gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="name">Client Name <span className="text-destructive">*</span></Label>
+                  <Input id="name" {...register("name")} placeholder="John Doe or Acme Inc." className="bg-muted/30" />
+                  {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
+                </div>
 
-              <div className="grid gap-2">
-                <Label>Email *</Label>
-                <Input
-                  {...register("email")}
-                  type="email"
-                  placeholder="client@example.com"
-                />
-                {errors.email && (
-                  <p className="text-sm text-red-500">{errors.email.message}</p>
-                )}
-              </div>
-            </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="email">Email Address <span className="text-destructive">*</span></Label>
+                    <Input id="email" {...register("email")} type="email" placeholder="client@example.com" className="bg-muted/30" />
+                    {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="phoneNumber">Phone Number <span className="text-destructive">*</span></Label>
+                    <Input id="phoneNumber" {...register("phoneNumber")} placeholder="9876543210" className="bg-muted/30" />
+                    {errors.phoneNumber && <p className="text-xs text-destructive">{errors.phoneNumber.message}</p>}
+                  </div>
+                </div>
 
-            <div className="grid gap-2">
-              <Label>Website</Label>
-              <Input
-                {...register("website")}
-                placeholder="https://example.com"
-              />
-              {errors.website && (
-                <p className="text-sm text-red-500">{errors.website.message}</p>
-              )}
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="grid gap-2">
-                <Label>CIN</Label>
-                <Input
-                  {...register("cin")}
-                  placeholder="U12345MH2020PTC123456"
-                />
-                {errors.cin && (
-                  <p className="text-sm text-red-500">{errors.cin.message}</p>
-                )}
-              </div>
-
-              <div className="grid gap-2">
-                <Label>GSTIN</Label>
-                <Input {...register("gstin")} placeholder="27AABCU9603R1ZV" />
-                {errors.gstin && (
-                  <p className="text-sm text-red-500">{errors.gstin.message}</p>
-                )}
+                <div className="grid gap-2">
+                  <Label htmlFor="website">Website</Label>
+                  <div className="relative">
+                    <Globe className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Input id="website" {...register("website")} placeholder="https://www.client.com" className="pl-9 bg-muted/30" />
+                  </div>
+                  {errors.website && <p className="text-xs text-destructive">{errors.website.message}</p>}
+                </div>
               </div>
             </div>
 
-            <div className="grid gap-2">
-              <Label>Address Line 1 *</Label>
-              <Input
-                {...register("addressLine1")}
-                placeholder="Street address"
-              />
-              {errors.addressLine1 && (
-                <p className="text-sm text-red-500">
-                  {errors.addressLine1.message}
-                </p>
-              )}
-            </div>
-
-            <div className="grid gap-2">
-              <Label>Address Line 2</Label>
-              <Input
-                {...register("addressLine2")}
-                placeholder="Apartment, suite, etc."
-              />
-              {errors.addressLine2 && (
-                <p className="text-sm text-red-500">
-                  {errors.addressLine2.message}
-                </p>
-              )}
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="grid gap-2">
-                <Label>City *</Label>
-                <Input {...register("city")} placeholder="City" />
-                {errors.city && (
-                  <p className="text-sm text-red-500">{errors.city.message}</p>
-                )}
+            {/* Tax Info */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 text-sm font-semibold text-primary">
+                <CreditCard className="h-4 w-4" />
+                <span>Tax & Registration</span>
               </div>
-
-              <div className="grid gap-2">
-                <Label>State *</Label>
-                <Input {...register("state")} placeholder="State" />
-                {errors.state && (
-                  <p className="text-sm text-red-500">{errors.state.message}</p>
-                )}
+              <Separator />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="cin">CIN (Corporate Identity Number)</Label>
+                  <Input id="cin" {...register("cin")} placeholder="U12345MH2020PTC123456" className="bg-muted/30 uppercase" />
+                  {errors.cin && <p className="text-xs text-destructive">{errors.cin.message}</p>}
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="gstin">GSTIN</Label>
+                  <Input id="gstin" {...register("gstin")} placeholder="27AABCU9603R1ZV" className="bg-muted/30 uppercase" />
+                  {errors.gstin && <p className="text-xs text-destructive">{errors.gstin.message}</p>}
+                </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="grid gap-2">
-                <Label>Country *</Label>
-                <Input {...register("country")} placeholder="Country" />
-                {errors.country && (
-                  <p className="text-sm text-red-500">
-                    {errors.country.message}
-                  </p>
-                )}
+            {/* Address Info */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 text-sm font-semibold text-primary">
+                <MapPin className="h-4 w-4" />
+                <span>Address Details</span>
               </div>
-
-              <div className="grid gap-2">
-                <Label>Postal Code *</Label>
-                <Input {...register("postalCode")} placeholder="400001" />
-                {errors.postalCode && (
-                  <p className="text-sm text-red-500">
-                    {errors.postalCode.message}
-                  </p>
-                )}
+              <Separator />
+              <div className="grid gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="addressLine1">Address Line 1 <span className="text-destructive">*</span></Label>
+                  <Input id="addressLine1" {...register("addressLine1")} placeholder="Street, Building No." className="bg-muted/30" />
+                  {errors.addressLine1 && <p className="text-xs text-destructive">{errors.addressLine1.message}</p>}
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="addressLine2">Address Line 2</Label>
+                  <Input id="addressLine2" {...register("addressLine2")} placeholder="Apartment, Suite, Locality" className="bg-muted/30" />
+                  {errors.addressLine2 && <p className="text-xs text-destructive">{errors.addressLine2.message}</p>}
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="col-span-1 md:col-span-2 grid gap-2">
+                    <Label htmlFor="city">City <span className="text-destructive">*</span></Label>
+                    <Input id="city" {...register("city")} placeholder="City" className="bg-muted/30" />
+                    {errors.city && <p className="text-xs text-destructive">{errors.city.message}</p>}
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="state">State <span className="text-destructive">*</span></Label>
+                    <Input id="state" {...register("state")} placeholder="State" className="bg-muted/30" />
+                    {errors.state && <p className="text-xs text-destructive">{errors.state.message}</p>}
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="postalCode">Zip <span className="text-destructive">*</span></Label>
+                    <Input id="postalCode" {...register("postalCode")} placeholder="400001" className="bg-muted/30" />
+                    {errors.postalCode && <p className="text-xs text-destructive">{errors.postalCode.message}</p>}
+                  </div>
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="country">Country <span className="text-destructive">*</span></Label>
+                  <Input id="country" {...register("country")} placeholder="Country" className="bg-muted/30" />
+                  {errors.country && <p className="text-xs text-destructive">{errors.country.message}</p>}
+                </div>
               </div>
             </div>
           </div>
 
-          <DialogFooter>
+          <DialogFooter className="p-6 bg-muted/20 border-t">
             <DialogClose asChild>
-              <Button ref={closeRef} variant="outline">
+              <Button ref={closeRef} variant="outline" type="button">
                 Cancel
               </Button>
             </DialogClose>
-            <Button type="submit">Save Client</Button>
+            <Button type="submit" className="px-8">Create Client</Button>
           </DialogFooter>
         </form>
       </DialogContent>

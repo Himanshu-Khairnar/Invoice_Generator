@@ -2,22 +2,50 @@ import { ClientForm } from "@/components/Client/ClientDialogBox";
 
 const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000/api/";
 
-export const getUserDetail = async (cookieHeader?: string, type?: string) => {
-    
+export type BusinessProfileForm = {
+  name: string;
+  email: string;
+  phoneNumber: string;
+  addressLine1: string;
+  addressLine2?: string;
+  city: string;
+  state: string;
+  country: string;
+  postalCode: string;
+  gstin?: string;
+  cin?: string;
+  website?: string;
+};
+
+export const saveBusinessProfile = async (data: BusinessProfileForm) => {
+  const res = await fetch(`${baseUrl}userdetail`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ ...data, type: "userDetail" }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err?.error || "Failed to save business profile");
+  }
+  return res.json();
+};
+
+export const getUserDetail = async (token?: string, type?: string) => {
+
   const headers: HeadersInit = {
     "Content-Type": "application/json",
   };
 
-  if (cookieHeader) {
-    headers.Cookie = cookieHeader;
+  if (token) {
+    headers["x-access-token"] = token;
   }
 
   const res = await fetch(`${baseUrl}userdetail?type=${type || "clientDetail"}`, {
     cache: "no-store",
     headers,
-    credentials: cookieHeader ? undefined : "include",
+    credentials: token ? undefined : "include",
   });
-  console.log(res);
 
   if (!res.ok) {
     throw new Error("Failed to get items");

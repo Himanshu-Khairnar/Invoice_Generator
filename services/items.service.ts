@@ -28,21 +28,20 @@ export const createItem = async ({
   }
 };
 
-export const getItem = async (cookieHeader?: string) => {
+export const getItem = async (token?: string) => {
   const headers: HeadersInit = {
     "Content-Type": "application/json",
   };
 
-  if (cookieHeader) {
-    headers.Cookie = cookieHeader;
+  if (token) {
+    headers["x-access-token"] = token;
   }
 
   const res = await fetch(`${baseUrl}item`, {
     cache: "no-store",
     headers,
-    credentials: cookieHeader ? undefined : "include",
+    credentials: token ? undefined : "include",
   });
-  console.log(res);
 
   if (!res.ok) {
     throw new Error("Failed to get items");

@@ -52,7 +52,7 @@ export async function GET(req: Request) {
     { expiresIn: "7d" }
   );
 
-  const response = NextResponse.redirect("http://localhost:3000/dashboard");
+  const response = NextResponse.redirect(new URL("/homepage", req.url));
 
   response.cookies.set("access_token", token, {
     httpOnly: true,

@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
+import { Loader2, FileText } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
@@ -52,13 +52,22 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-muted/40 p-4">
-      <Card className="w-full max-w-md shadow-lg">
+      <div className="w-full max-w-md space-y-6">
+        <div className="flex flex-col items-center gap-2">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+            <FileText size={20} strokeWidth={2.5} />
+          </div>
+          <span className="text-xl font-bold tracking-tight">
+            Invoice<span className="opacity-60">Flow</span>
+          </span>
+        </div>
+      <Card className="w-full shadow-lg">
         <CardHeader className="space-y-1 text-center">
           <CardTitle className="text-2xl font-bold">
-            Create an account
+            Welcome back
           </CardTitle>
           <CardDescription>
-            Enter your details below to create your account
+            Sign in to your account to continue
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -94,7 +103,7 @@ export default function LoginPage() {
 
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Create Account
+              Sign In
             </Button>
           </form>
 
@@ -124,16 +133,17 @@ export default function LoginPage() {
         {/* 6. Footer Link */}
         <CardFooter className="flex justify-center">
           <p className="text-sm text-muted-foreground">
-            Already have an account?{" "}
+            Don&apos;t have an account?{" "}
             <Link
-              href="/login"
+              href="/register"
               className="font-medium text-primary hover:underline"
             >
-              Sign In
+              Sign up
             </Link>
           </p>
         </CardFooter>
       </Card>
+      </div>
     </div>
   );
 }
