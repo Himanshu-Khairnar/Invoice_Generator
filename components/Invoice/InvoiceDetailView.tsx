@@ -21,26 +21,10 @@ interface InvoiceDetailViewProps {
 }
 
 const statusConfig = {
-  due: {
-    color: "bg-yellow-100 text-yellow-800",
-    icon: Clock,
-    label: "Due",
-  },
-  "payment done": {
-    color: "bg-green-100 text-green-800",
-    icon: CheckCircle2,
-    label: "Payment Done",
-  },
-  cancel: {
-    color: "bg-red-100 text-red-800",
-    icon: XCircle,
-    label: "Cancelled",
-  },
-  draft: {
-    color: "bg-gray-100 text-gray-800",
-    icon: AlertCircle,
-    label: "Draft",
-  },
+  due: { color: "bg-yellow-100 text-yellow-800", icon: Clock, label: "Due" },
+  "payment done": { color: "bg-green-100 text-green-800", icon: CheckCircle2, label: "Payment Done" },
+  cancel: { color: "bg-red-100 text-red-800", icon: XCircle, label: "Cancelled" },
+  draft: { color: "bg-gray-100 text-gray-800", icon: AlertCircle, label: "Draft" },
 };
 
 export default function InvoiceDetailView({
@@ -49,38 +33,26 @@ export default function InvoiceDetailView({
 }: InvoiceDetailViewProps) {
   const [status, setStatus] = useState<string>(invoice.status);
   const [updating, setUpdating] = useState(false);
-  const [message, setMessage] = useState<{
-    type: "success" | "error";
-    text: string;
-  } | null>(null);
+  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
   const StatusIcon =
-    statusConfig[invoice.status as keyof typeof statusConfig]?.icon ||
-    AlertCircle;
+    statusConfig[invoice.status as keyof typeof statusConfig]?.icon || AlertCircle;
 
   const handleStatusChange = async (newStatus: string) => {
     try {
       setUpdating(true);
       setMessage(null);
-
       const response = await updateInvoiceStatus(
         invoice._id as any,
         newStatus as "due" | "payment done" | "cancel" | "draft"
       );
-
       if (response.success) {
         setStatus(newStatus);
         onInvoiceUpdate(response.data);
-        setMessage({
-          type: "success",
-          text: "Status updated successfully",
-        });
+        setMessage({ type: "success", text: "Status updated successfully" });
       }
     } catch (error: any) {
-      setMessage({
-        type: "error",
-        text: error.message || "Failed to update status",
-      });
+      setMessage({ type: "error", text: error.message || "Failed to update status" });
     } finally {
       setUpdating(false);
     }
@@ -91,29 +63,23 @@ export default function InvoiceDetailView({
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
-      {/* Header with Invoice Number and Status */}
+      {/* Header */}
       <div className="flex justify-between items-start">
         <div>
-          <h1 className="text-3xl font-bold">
-            Invoice {invoice.invoiceNumber}
-          </h1>
+          <h1 className="text-3xl font-bold">Invoice {invoice.invoiceNumber}</h1>
           <p className="text-gray-500 mt-1">
             Date: {new Date(invoice.invoiceDate).toLocaleDateString()}
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <Badge
-            className={
-              statusConfig[invoice.status as keyof typeof statusConfig]?.color
-            }
-          >
+          <Badge className={statusConfig[invoice.status as keyof typeof statusConfig]?.color}>
             <StatusIcon className="w-4 h-4 mr-1" />
             {statusConfig[invoice.status as keyof typeof statusConfig]?.label}
           </Badge>
         </div>
       </div>
 
-      {/* Status Update Section */}
+      {/* Status Update */}
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">Update Invoice Status</CardTitle>
@@ -121,14 +87,8 @@ export default function InvoiceDetailView({
         <CardContent className="space-y-4">
           <div className="flex gap-4 items-end">
             <div className="flex-1">
-              <label className="block text-sm font-medium mb-2">
-                New Status
-              </label>
-              <Select
-                value={status}
-                onValueChange={handleStatusChange}
-                disabled={updating}
-              >
+              <label className="block text-sm font-medium mb-2">New Status</label>
+              <Select value={status} onValueChange={handleStatusChange} disabled={updating}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>
@@ -141,15 +101,8 @@ export default function InvoiceDetailView({
               </Select>
             </div>
           </div>
-
           {message && (
-            <div
-              className={`p-3 rounded-md text-sm ${
-                message.type === "success"
-                  ? "bg-green-100 text-green-800"
-                  : "bg-red-100 text-red-800"
-              }`}
-            >
+            <div className={`p-3 rounded-md text-sm ${message.type === "success" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
               {message.text}
             </div>
           )}
@@ -158,42 +111,30 @@ export default function InvoiceDetailView({
 
       {/* Invoice Details */}
       <div className="grid grid-cols-2 gap-6">
-        {/* Bill From */}
         <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Bill From</CardTitle>
-          </CardHeader>
+          <CardHeader><CardTitle className="text-base">Bill From</CardTitle></CardHeader>
           <CardContent>
-            <p className="font-semibold">{userDetail?.companyName}</p>
-            <p className="text-sm text-gray-600">
-              {userDetail?.companyAddress}
-            </p>
+            <p className="font-semibold">{userDetail?.name}</p>
+            <p className="text-sm text-gray-600">{userDetail?.addressLine1}{userDetail?.city ? `, ${userDetail.city}` : ""}</p>
             <p className="text-sm text-gray-600">{userDetail?.email}</p>
-            <p className="text-sm text-gray-600">{userDetail?.phone}</p>
+            <p className="text-sm text-gray-600">{userDetail?.phoneNumber}</p>
           </CardContent>
         </Card>
 
-        {/* Bill To */}
         <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Bill To</CardTitle>
-          </CardHeader>
+          <CardHeader><CardTitle className="text-base">Bill To</CardTitle></CardHeader>
           <CardContent>
-            <p className="font-semibold">{clientDetail?.companyName}</p>
-            <p className="text-sm text-gray-600">
-              {clientDetail?.companyAddress}
-            </p>
+            <p className="font-semibold">{clientDetail?.name}</p>
+            <p className="text-sm text-gray-600">{clientDetail?.addressLine1}{clientDetail?.city ? `, ${clientDetail.city}` : ""}</p>
             <p className="text-sm text-gray-600">{clientDetail?.email}</p>
-            <p className="text-sm text-gray-600">{clientDetail?.phone}</p>
+            <p className="text-sm text-gray-600">{clientDetail?.phoneNumber}</p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Invoice Items */}
+      {/* Items */}
       <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Items</CardTitle>
-        </CardHeader>
+        <CardHeader><CardTitle className="text-base">Items</CardTitle></CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -210,14 +151,10 @@ export default function InvoiceDetailView({
                 {invoice.products?.map((product: any, index: number) => (
                   <tr key={index} className="border-b">
                     <td className="py-2 px-2">{product.productName}</td>
-                    <td className="text-right py-2 px-2">
-                      ₹{product.productPrice}
-                    </td>
+                    <td className="text-right py-2 px-2">₹{product.productPrice}</td>
                     <td className="text-right py-2 px-2">{product.quantity}</td>
                     <td className="text-right py-2 px-2">{product.taxSlab}%</td>
-                    <td className="text-right py-2 px-2">
-                      ₹{product.lineTotal}
-                    </td>
+                    <td className="text-right py-2 px-2">₹{product.lineTotal}</td>
                   </tr>
                 ))}
               </tbody>
@@ -238,12 +175,12 @@ export default function InvoiceDetailView({
               <span>Tax Total:</span>
               <span>₹{invoice.taxTotal}</span>
             </div>
-            {invoice.discountTotal && (
+            {invoice.discountTotal ? (
               <div className="flex justify-between">
                 <span>Discount:</span>
                 <span>-₹{invoice.discountTotal}</span>
               </div>
-            )}
+            ) : null}
             <div className="flex justify-between border-t pt-2 font-bold text-lg">
               <span>Total Amount:</span>
               <span>₹{invoice.totalAmount}</span>
@@ -267,7 +204,6 @@ export default function InvoiceDetailView({
       {/* Actions */}
       <div className="flex gap-3 justify-end">
         <Button variant="outline">Download PDF</Button>
-        <Button variant="outline">Send Email</Button>
         <Button>Edit Invoice</Button>
       </div>
     </div>

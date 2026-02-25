@@ -78,11 +78,17 @@ const schema = z.object({
 
 export type ClientForm = z.infer<typeof schema>;
 
-export default function ClientDialogBox() {
+type Props = {
+  onClientCreated?: (client: ClientForm & { _id: string }) => void;
+  triggerSize?: "default" | "sm" | "lg" | "icon";
+};
+
+export default function ClientDialogBox({ onClientCreated, triggerSize = "default" }: Props = {}) {
   const closeRef = useRef<HTMLButtonElement>(null);
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<ClientForm>({
     resolver: zodResolver(schema),
@@ -91,9 +97,14 @@ export default function ClientDialogBox() {
   const onSubmit = async (data: ClientForm) => {
     try {
       const response = await postUserDetail({...data,type:"clientDetail"});
-      if (response) {    
+      if (response) {
         closeRef.current?.click();
-        window.location.reload();
+        reset();
+        if (onClientCreated && response.data) {
+          onClientCreated(response.data);
+        } else {
+          window.location.reload();
+        }
       }
     } catch (error) {
       console.error("Error creating client:", error);
@@ -103,7 +114,7 @@ export default function ClientDialogBox() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="gap-2">
+        <Button size={triggerSize} className="gap-2">
           <Plus className="h-4 w-4" /> Add Client
         </Button>
       </DialogTrigger>

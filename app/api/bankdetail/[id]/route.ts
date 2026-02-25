@@ -2,15 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import BankDetail from "@/models/bankDetail.model";
 
-
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await dbConnect();
+    const { id } = await params;
 
-    const bankDetail = await BankDetail.findById(params.id);
+    const bankDetail = await BankDetail.findById(id);
 
     if (!bankDetail) {
       return NextResponse.json(
@@ -31,16 +31,16 @@ export async function GET(
   }
 }
 
-
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await dbConnect();
+    const { id } = await params;
 
     const body = await request.json();
-    const bankDetail = await BankDetail.findByIdAndUpdate(params.id, body, {
+    const bankDetail = await BankDetail.findByIdAndUpdate(id, body, {
       new: true,
       runValidators: true,
     });
@@ -64,15 +64,15 @@ export async function PUT(
   }
 }
 
-
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await dbConnect();
+    const { id } = await params;
 
-    const bankDetail = await BankDetail.findByIdAndDelete(params.id);
+    const bankDetail = await BankDetail.findByIdAndDelete(id);
 
     if (!bankDetail) {
       return NextResponse.json(

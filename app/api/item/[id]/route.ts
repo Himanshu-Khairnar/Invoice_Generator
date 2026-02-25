@@ -4,12 +4,13 @@ import Item from "@/models/item.model";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await dbConnect();
+    const { id } = await params;
 
-    const item = await Item.findById(params.id);
+    const item = await Item.findById(id);
 
     if (!item) {
       return NextResponse.json(
@@ -29,13 +30,14 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await dbConnect();
+    const { id } = await params;
 
     const body = await request.json();
-    const item = await Item.findByIdAndUpdate(params.id, body, {
+    const item = await Item.findByIdAndUpdate(id, body, {
       new: true,
       runValidators: true,
     });
@@ -56,15 +58,15 @@ export async function PUT(
   }
 }
 
-
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await dbConnect();
+    const { id } = await params;
 
-    const item = await Item.findByIdAndDelete(params.id);
+    const item = await Item.findByIdAndDelete(id);
 
     if (!item) {
       return NextResponse.json(

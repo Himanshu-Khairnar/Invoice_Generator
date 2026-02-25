@@ -4,12 +4,13 @@ import UserImage from "@/models/userImage.model";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await dbConnect();
+    const { id } = await params;
 
-    const userImage = await UserImage.findById(params.id);
+    const userImage = await UserImage.findById(id);
 
     if (!userImage) {
       return NextResponse.json(
@@ -32,13 +33,14 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await dbConnect();
+    const { id } = await params;
 
     const body = await request.json();
-    const userImage = await UserImage.findByIdAndUpdate(params.id, body, {
+    const userImage = await UserImage.findByIdAndUpdate(id, body, {
       new: true,
       runValidators: true,
     });
@@ -64,12 +66,13 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await dbConnect();
+    const { id } = await params;
 
-    const userImage = await UserImage.findByIdAndDelete(params.id);
+    const userImage = await UserImage.findByIdAndDelete(id);
 
     if (!userImage) {
       return NextResponse.json(

@@ -2,15 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import PersonalDetail from "@/models/userDetail.model";
 
-// GET single user detail by ID
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await dbConnect();
+    const { id } = await params;
 
-    const userDetail = await PersonalDetail.findById(params.id);
+    const userDetail = await PersonalDetail.findById(id);
 
     if (!userDetail) {
       return NextResponse.json(
@@ -31,16 +31,16 @@ export async function GET(
   }
 }
 
-// PUT - Update user detail
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await dbConnect();
+    const { id } = await params;
 
     const body = await request.json();
-    const userDetail = await PersonalDetail.findByIdAndUpdate(params.id, body, {
+    const userDetail = await PersonalDetail.findByIdAndUpdate(id, body, {
       new: true,
       runValidators: true,
     });
@@ -64,15 +64,15 @@ export async function PUT(
   }
 }
 
-// DELETE user detail
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await dbConnect();
+    const { id } = await params;
 
-    const userDetail = await PersonalDetail.findByIdAndDelete(params.id);
+    const userDetail = await PersonalDetail.findByIdAndDelete(id);
 
     if (!userDetail) {
       return NextResponse.json(

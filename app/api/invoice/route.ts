@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import Invoice from "@/models/invoice.model";
+import PersonalDetail from "@/models/userDetail.model";
+import { transporter, buildInvoiceEmail } from "@/lib/mailer";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 
@@ -63,6 +65,46 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
     const invoice = await Invoice.create({ ...body, userId: payload.userId });
+
+    // Send invoice email to client automatically (non-blocking)
+    if (invoice.status !== "draft") {
+      try {
+        const [business, client] = await Promise.all([
+          PersonalDetail.findById(body.userDetailId),
+          PersonalDetail.findById(body.clientDetailId),
+        ]);
+
+        if (client?.email) {
+          const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+          const payUrl = `${appUrl}/pay/${invoice._id}`;
+
+          const html = buildInvoiceEmail({
+            invoiceNumber: invoice.invoiceNumber,
+            businessName: business?.name ?? "Your Vendor",
+            clientName: client.name,
+            totalAmount: invoice.totalAmount ?? 0,
+            dueDate: invoice.dueDate?.toString(),
+            payUrl,
+            products: (invoice.products ?? []).map((p: any) => ({
+              productName: p.productName,
+              quantity: p.quantity,
+              productPrice: p.productPrice,
+              lineTotal: p.lineTotal ?? 0,
+            })),
+          });
+
+          await transporter.sendMail({
+            from: `"${business?.name ?? "InvoiceApp"}" <${process.env.EMAIL_FROM}>`,
+            to: client.email,
+            subject: `Invoice #${invoice.invoiceNumber} — ₹${(invoice.totalAmount ?? 0).toFixed(2)} due`,
+            html,
+          });
+        }
+      } catch (emailErr) {
+        // Email failure should not block invoice creation
+        console.error("Failed to send invoice email:", emailErr);
+      }
+    }
 
     return NextResponse.json({ success: true, data: invoice }, { status: 201 });
   } catch (error: any) {

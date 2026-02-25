@@ -19,6 +19,7 @@ import {
 import { AlertCircle, Building2, ChevronDown, ChevronUp, CreditCard, Edit3, Eye, FileText, Loader2, Plus, Trash2 } from "lucide-react";
 import { createInvoice } from "@/services/invoice.service";
 import { saveBusinessProfile } from "@/services/userDetail.service";
+import ClientDialogBox from "@/components/Client/ClientDialogBox";
 
 
 type BusinessDetail = {
@@ -339,8 +340,8 @@ function BankDetailSection({
   onSelect: (id: string) => void;
   onCreated: (b: BankDetail) => void;
 }) {
-  const [expanded, setExpanded] = useState(false);
-  const [adding, setAdding] = useState(false);
+  const [expanded, setExpanded] = useState(true);
+  const [adding, setAdding] = useState(bankDetails.length === 0);
   const [form, setForm] = useState({ ...EMPTY_BANK_FORM });
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState("");
@@ -796,6 +797,8 @@ export default function CreateInvoiceForm({ clients, items, userDetail: initialU
   const [userDetail, setUserDetail] = useState<BusinessDetail | null>(initialUserDetail);
   const userDetailId = userDetail?._id ?? "";
 
+  const [clientsList, setClientsList] = useState<Client[]>(clients);
+
   const [tab, setTab] = useState<"edit" | "preview">("edit");
   const [invoiceNumber, setInvoiceNumber] = useState(genInvoiceNumber());
   const [invoiceDate, setInvoiceDate] = useState(new Date().toISOString().slice(0, 10));
@@ -810,7 +813,7 @@ export default function CreateInvoiceForm({ clients, items, userDetail: initialU
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
-  const selectedClient = clients.find((c) => c._id === clientDetailId) ?? null;
+  const selectedClient = clientsList.find((c) => c._id === clientDetailId) ?? null;
   const selectedBankDetail = bankDetailsList.find((b) => b._id === bankDetailId) ?? null;
 
   // ─── product helpers ────────────────────────────────────────────────────────
@@ -916,7 +919,7 @@ export default function CreateInvoiceForm({ clients, items, userDetail: initialU
   };
 
   const noUserDetail = !userDetailId;
-  const noClients = clients.length === 0;
+  const noClients = clientsList.length === 0;
 
   return (
     <div className="space-y-6">
@@ -1010,18 +1013,27 @@ export default function CreateInvoiceForm({ clients, items, userDetail: initialU
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label htmlFor="client">Bill To (Client)</Label>
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="client">Bill To (Client)</Label>
+                      <ClientDialogBox
+                        triggerSize="sm"
+                        onClientCreated={(client) => {
+                          setClientsList((prev) => [...prev, client]);
+                          setClientDetailId(client._id);
+                        }}
+                      />
+                    </div>
                     <Select value={clientDetailId} onValueChange={setClientDetailId}>
                       <SelectTrigger id="client">
                         <SelectValue placeholder="Select a client" />
                       </SelectTrigger>
                       <SelectContent>
-                        {clients.length === 0 ? (
+                        {clientsList.length === 0 ? (
                           <SelectItem value="__none" disabled>
                             No clients available
                           </SelectItem>
                         ) : (
-                          clients.map((c) => (
+                          clientsList.map((c) => (
                             <SelectItem key={c._id} value={c._id}>
                               {c.name} — {c.city}
                             </SelectItem>
