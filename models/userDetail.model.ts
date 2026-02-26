@@ -78,6 +78,10 @@ const PersonalDetailSchema = new mongoose.Schema<IPersonalDetail>(
       match: /^(https?:\/\/)?([\w-]+(\.[\w-]+)+)(\/[\w-]*)*\/?$/,
       required: false,
     },
+    timesInvoiced: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true }
 );

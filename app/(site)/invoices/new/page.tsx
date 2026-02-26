@@ -1,12 +1,13 @@
-import { getServerItems, getServerUserDetails, getServerBankDetails } from "@/lib/server/data";
+import { getServerItems, getServerUserDetails, getServerBankDetails, getServerUserImage } from "@/lib/server/data";
 import CreateInvoiceForm from "@/components/Invoice/CreateInvoiceForm";
 
 const Page = async () => {
-  const [clients, items, userDetails, bankDetails] = await Promise.all([
+  const [clients, items, userDetails, bankDetails, userImage] = await Promise.all([
     getServerUserDetails("clientDetail"),
     getServerItems(),
     getServerUserDetails("userDetail"),
     getServerBankDetails(),
+    getServerUserImage(),
   ]);
   const userDetail = userDetails[0] ?? null;
 
@@ -16,6 +17,7 @@ const Page = async () => {
       items={items}
       userDetail={userDetail}
       bankDetails={bankDetails}
+      logo={userImage?.bussinessLogo ?? null}
     />
   );
 };

@@ -36,6 +36,7 @@ type BusinessDetail = {
   phoneNumber: string;
   email: string;
   website?: string;
+  logo?: string;
 };
 
 type Client = {
@@ -88,6 +89,7 @@ type Props = {
   items: CatalogItem[];
   userDetail: BusinessDetail | null;
   bankDetails: BankDetail[];
+  logo: string | null;
 };
 
 // ─── Constants & helpers ──────────────────────────────────────────────────────
@@ -562,6 +564,7 @@ interface PreviewProps {
   invoiceDate: string;
   dueDate: string;
   business: BusinessDetail | null;
+  logo: string | null;
   client: Client | null;
   products: LineProduct[];
   description: string;
@@ -577,6 +580,7 @@ function InvoicePreview({
   invoiceDate,
   dueDate,
   business,
+  logo,
   client,
   products,
   description,
@@ -591,10 +595,20 @@ function InvoicePreview({
       {/* Header */}
       <div className="flex items-start justify-between mb-8">
         <div>
-          <div className="flex items-center gap-2 mb-3">
-            <div className="h-9 w-9 rounded-lg bg-primary flex items-center justify-center">
-              <FileText className="h-5 w-5 text-primary-foreground" />
+          {logo ? (
+            <img
+              src={logo}
+              alt="Company logo"
+              style={{ maxHeight: "56px", maxWidth: "160px", objectFit: "contain", display: "block", marginBottom: "8px" }}
+            />
+          ) : (
+            <div className="flex items-center gap-2 mb-2">
+              <div className="h-9 w-9 rounded-lg bg-primary flex items-center justify-center shrink-0">
+                <FileText className="h-5 w-5 text-primary-foreground" />
+              </div>
             </div>
+          )}
+          <div className="mb-3">
             <span className="font-bold text-xl text-gray-900">
               {business?.name ?? "Your Business"}
             </span>
@@ -791,7 +805,7 @@ function InvoicePreview({
 
 // ─── Main Form ────────────────────────────────────────────────────────────────
 
-export default function CreateInvoiceForm({ clients, items, userDetail: initialUserDetail, bankDetails: initialBankDetails }: Props) {
+export default function CreateInvoiceForm({ clients, items, userDetail: initialUserDetail, bankDetails: initialBankDetails, logo }: Props) {
   const router = useRouter();
 
   const [userDetail, setUserDetail] = useState<BusinessDetail | null>(initialUserDetail);
@@ -958,6 +972,7 @@ export default function CreateInvoiceForm({ clients, items, userDetail: initialU
           invoiceDate={invoiceDate}
           dueDate={dueDate}
           business={userDetail}
+          logo={logo}
           client={selectedClient}
           products={products}
           description={description}

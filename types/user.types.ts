@@ -10,6 +10,11 @@ export interface IUser {
   providerId?: string;
   createdAt: Date;
   updatedAt: Date;
+  // Client aggregated stats
+  numberOfInvoices?: number;
+  numberOfDrafts?: number;
+  totalInvoiced?: number;
+  totalUnpaid?: number;
 }
 
 export interface IUserImage {

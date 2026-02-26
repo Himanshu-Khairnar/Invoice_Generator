@@ -13,7 +13,9 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { updateInvoiceStatus } from "@/services/invoice.service";
-import { AlertCircle, CheckCircle2, Clock, XCircle } from "lucide-react";
+import { generateInvoiceHTML } from "@/lib/invoice-html";
+import { AlertCircle, CheckCircle2, Clock, Download, XCircle } from "lucide-react";
+
 
 interface InvoiceDetailViewProps {
   invoice: IInvoice;
@@ -60,6 +62,7 @@ export default function InvoiceDetailView({
 
   const userDetail = invoice.userDetailId as any;
   const clientDetail = invoice.clientDetailId as any;
+  const businessLogo = (invoice.userImageId as any)?.bussinessLogo ?? null;
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
@@ -114,6 +117,13 @@ export default function InvoiceDetailView({
         <Card>
           <CardHeader><CardTitle className="text-base">Bill From</CardTitle></CardHeader>
           <CardContent>
+            {businessLogo && (
+              <img
+                src={businessLogo}
+                alt="Company logo"
+                style={{ maxHeight: "48px", maxWidth: "140px", objectFit: "contain", display: "block", marginBottom: "8px" }}
+              />
+            )}
             <p className="font-semibold">{userDetail?.name}</p>
             <p className="text-sm text-gray-600">{userDetail?.addressLine1}{userDetail?.city ? `, ${userDetail.city}` : ""}</p>
             <p className="text-sm text-gray-600">{userDetail?.email}</p>
@@ -203,7 +213,18 @@ export default function InvoiceDetailView({
 
       {/* Actions */}
       <div className="flex gap-3 justify-end">
-        <Button variant="outline">Download PDF</Button>
+        <Button
+          variant="outline"
+          onClick={() => {
+            const win = window.open("", "_blank");
+            if (!win) return;
+            win.document.write(generateInvoiceHTML(invoice, userDetail, clientDetail, businessLogo, true));
+            win.document.close();
+          }}
+        >
+          <Download className="mr-2 h-4 w-4" />
+          Download PDF
+        </Button>
         <Button>Edit Invoice</Button>
       </div>
     </div>

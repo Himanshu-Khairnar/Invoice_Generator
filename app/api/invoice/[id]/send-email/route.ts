@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import Invoice from "@/models/invoice.model";
+import UserImage from "@/models/userImage.model";
 import { transporter, buildInvoiceEmail } from "@/lib/mailer";
+import { generateInvoiceHTML } from "@/lib/invoice-html";
+import { generatePDFFromHTML } from "@/lib/generate-pdf";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 
@@ -32,9 +35,13 @@ export async function POST(
 
     const { id } = await params;
 
-    const invoice = await Invoice.findById(id)
-      .populate("userDetailId")
-      .populate("clientDetailId");
+    const [invoice, userImage] = await Promise.all([
+      Invoice.findById(id)
+        .populate("userDetailId")
+        .populate("clientDetailId")
+        .populate("bankDetails"),
+      UserImage.findOne({ userId }).lean(),
+    ]);
 
     if (!invoice) {
       return NextResponse.json(
@@ -43,7 +50,6 @@ export async function POST(
       );
     }
 
-    // Ensure this invoice belongs to the logged-in user
     if (invoice.userId.toString() !== userId) {
       return NextResponse.json({ message: "Forbidden" }, { status: 403 });
     }
@@ -60,7 +66,9 @@ export async function POST(
 
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
     const payUrl = `${appUrl}/pay/${id}`;
+    const businessLogo = (userImage as any)?.bussinessLogo ?? null;
 
+    // Generate HTML email body
     const html = buildInvoiceEmail({
       invoiceNumber: invoice.invoiceNumber,
       businessName: business?.name ?? "Your Vendor",
@@ -76,12 +84,27 @@ export async function POST(
       })),
     });
 
-    await transporter.sendMail({
+    // Generate PDF attachment
+    const invoiceHTML = generateInvoiceHTML(invoice, business, client, businessLogo);
+    const pdfBuffer = await generatePDFFromHTML(invoiceHTML);
+    const pdfFilename = `Invoice-${invoice.invoiceNumber}.pdf`;
+
+    const mailOptions = {
       from: `"${business?.name ?? "InvoiceApp"}" <${process.env.EMAIL_FROM}>`,
       to: client.email,
+      cc: business?.email ?? undefined,
       subject: `Invoice #${invoice.invoiceNumber} — ₹${(invoice.totalAmount ?? 0).toFixed(2)} due`,
       html,
-    });
+      attachments: [
+        {
+          filename: pdfFilename,
+          content: pdfBuffer,
+          contentType: "application/pdf",
+        },
+      ],
+    };
+
+    await transporter.sendMail(mailOptions);
 
     return NextResponse.json({ success: true, message: "Email sent successfully." });
   } catch (error: any) {

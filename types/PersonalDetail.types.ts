@@ -15,6 +15,7 @@ export interface IPersonalDetail {
     phoneNumber: string;
     email: string;
     website?: string;
+    timesInvoiced?: number;
     createdAt?: Date;
     updatedAt?: Date;
 }

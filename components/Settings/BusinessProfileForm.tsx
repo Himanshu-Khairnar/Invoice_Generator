@@ -18,10 +18,12 @@ import {
   CheckCircle2,
   Edit3,
   Globe,
+  ImagePlus,
   Loader2,
   Mail,
   MapPin,
   Phone,
+  X,
 } from "lucide-react";
 import {
   saveBusinessProfile,
@@ -46,6 +48,7 @@ export type BusinessDetail = {
 
 type Props = {
   initial?: BusinessDetail | null;
+  initialLogo?: string | null;
   onSaved?: (detail: BusinessDetail) => void;
 };
 
@@ -85,9 +88,11 @@ function toForm(d?: BusinessDetail | null): BPForm {
 // ── Profile summary card (read-only) ─────────────────────────────────────────
 function ProfileSummary({
   detail,
+  logo,
   onEdit,
 }: {
   detail: BusinessDetail;
+  logo: string;
   onEdit: () => void;
 }) {
   return (
@@ -95,8 +100,12 @@ function ProfileSummary({
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-2">
           <div className="flex items-center gap-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-              <Building2 className="h-5 w-5 text-primary" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 overflow-hidden">
+              {logo ? (
+                <img src={logo} alt="Company logo" style={{ width: "100%", height: "100%", objectFit: "contain", display: "block" }} />
+              ) : (
+                <Building2 className="h-5 w-5 text-primary" />
+              )}
             </div>
             <div>
               <CardTitle className="text-base leading-tight">{detail.name}</CardTitle>
@@ -188,12 +197,15 @@ function ProfileSummary({
 }
 
 // ── Main component ────────────────────────────────────────────────────────────
-export default function BusinessProfileForm({ initial, onSaved }: Props) {
+const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000/api/";
+
+export default function BusinessProfileForm({ initial, initialLogo, onSaved }: Props) {
   const [editing, setEditing] = useState(!initial); // open form if no profile yet
   const [savedDetail, setSavedDetail] = useState<BusinessDetail | null>(
     initial ?? null
   );
   const [form, setForm] = useState<BPForm>(toForm(initial));
+  const [logo, setLogo] = useState<string>(initialLogo ?? "");
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
@@ -223,7 +235,15 @@ export default function BusinessProfileForm({ initial, onSaved }: Props) {
 
     setSaving(true);
     try {
-      const res = await saveBusinessProfile(form);
+      const [res] = await Promise.all([
+        saveBusinessProfile(form),
+        fetch(`${baseUrl}userimage`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ bussinessLogo: logo }),
+        }),
+      ]);
       if (res?.success) {
         const updated: BusinessDetail = res.data;
         setSavedDetail(updated);
@@ -266,7 +286,7 @@ export default function BusinessProfileForm({ initial, onSaved }: Props) {
 
       {/* ── Summary card when profile exists and not editing ── */}
       {savedDetail && !editing && (
-        <ProfileSummary detail={savedDetail} onEdit={handleEdit} />
+        <ProfileSummary detail={savedDetail} logo={logo} onEdit={handleEdit} />
       )}
 
       {/* ── No profile banner ── */}
@@ -305,6 +325,59 @@ export default function BusinessProfileForm({ initial, onSaved }: Props) {
             </CardHeader>
             <CardContent>
               <div className="grid gap-4 sm:grid-cols-2">
+                {/* Logo upload */}
+                <div className="sm:col-span-2 space-y-1.5">
+                  <Label>Company Logo</Label>
+                  <div className="flex items-center gap-4">
+                    <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-lg border border-dashed bg-muted overflow-hidden">
+                      {logo ? (
+                        <img
+                          src={logo}
+                          alt="Logo preview"
+                          style={{ width: "100%", height: "100%", objectFit: "contain", display: "block" }}
+                        />
+                      ) : (
+                        <ImagePlus className="h-7 w-7 text-muted-foreground" />
+                      )}
+                    </div>
+                    <div className="space-y-2">
+                      <label
+                        htmlFor="bp-logo"
+                        className="inline-flex cursor-pointer items-center gap-1.5 rounded-md border border-input bg-background px-3 py-1.5 text-sm font-medium shadow-sm hover:bg-accent hover:text-accent-foreground"
+                      >
+                        <ImagePlus className="h-3.5 w-3.5" />
+                        {logo ? "Change Logo" : "Upload Logo"}
+                        <input
+                          id="bp-logo"
+                          type="file"
+                          accept="image/*"
+                          className="sr-only"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (!file) return;
+                            const reader = new FileReader();
+                            reader.onload = () => setLogo(reader.result as string);
+                            reader.readAsDataURL(file);
+                          }}
+                        />
+                      </label>
+                      {logo && (
+                        <button
+                          type="button"
+                          onClick={() => setLogo("")}
+                          className="flex items-center gap-1 text-xs text-muted-foreground hover:text-destructive"
+                        >
+                          <X className="h-3 w-3" />
+                          Remove
+                        </button>
+                      )}
+                      <p className="text-xs text-muted-foreground">
+                        PNG, JPG or SVG. Displayed on invoices.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
                 <div className="sm:col-span-2 space-y-1.5">
                   <Label htmlFor="bp-name">Business / Company Name *</Label>
                   <Input

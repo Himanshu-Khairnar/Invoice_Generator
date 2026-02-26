@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import Invoice from "@/models/invoice.model";
+import Item from "@/models/item.model";
 import PersonalDetail from "@/models/userDetail.model";
 import { transporter, buildInvoiceEmail } from "@/lib/mailer";
+import { calcLineTotals, calcInvoiceTotals } from "@/lib/invoice-calc";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 
@@ -64,7 +66,38 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const invoice = await Invoice.create({ ...body, userId: payload.userId });
+
+    // Recalculate line totals and invoice totals server-side
+    const products = calcLineTotals(body.products ?? []);
+    const totals = calcInvoiceTotals(products, body.paidAmount);
+
+    const invoice = await Invoice.create({
+      ...body,
+      userId: payload.userId,
+      products,
+      ...totals,
+    });
+
+    // Update catalog items: increment timesInvoiced and sync productPrice
+    const catalogProducts = products.filter((p: any) => p.itemId);
+    if (catalogProducts.length) {
+      await Promise.all([
+        Item.updateMany(
+          { _id: { $in: catalogProducts.map((p: any) => p.itemId) } },
+          { $inc: { timesInvoiced: 1 } }
+        ),
+        ...catalogProducts.map((p: any) =>
+          Item.findByIdAndUpdate(p.itemId, { productPrice: p.productPrice })
+        ),
+      ]);
+    }
+
+    // Increment timesInvoiced on the client used in this invoice
+    if (body.clientDetailId) {
+      await PersonalDetail.findByIdAndUpdate(body.clientDetailId, {
+        $inc: { timesInvoiced: 1 },
+      });
+    }
 
     // Send invoice email to client automatically (non-blocking)
     if (invoice.status !== "draft") {

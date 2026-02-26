@@ -5,6 +5,7 @@ import { cookies } from "next/headers"
 import jwt from "jsonwebtoken"
 import dbConnect from "@/lib/mongodb"
 import User from "@/models/user.model"
+import AppBreadcrumb from "@/components/Layout/AppBreadcrumb"
 
 async function getCurrentUser() {
   try {
@@ -35,6 +36,7 @@ export default async function Layout({ children }: { children: React.ReactNode }
         <header className="flex h-12 shrink-0 items-center gap-2 border-b bg-background px-4">
           <SidebarTrigger className="-ml-1" />
           <Separator orientation="vertical" className="h-4" />
+          <AppBreadcrumb />
         </header>
         <div className="flex flex-1 flex-col gap-4 p-6">
           {children}

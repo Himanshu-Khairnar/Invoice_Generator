@@ -1,356 +1,328 @@
-"use client";
-
 import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { 
-  ArrowRight, 
-  CheckCircle2, 
-  FileText, 
-  Layers, 
-  ShieldCheck, 
-  Zap, 
-  Users, 
-  CreditCard 
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  ArrowRight,
+  CheckCircle2,
+  CreditCard,
+  FileText,
+  Layers,
+  ShieldCheck,
+  Users,
+  Zap,
 } from "lucide-react";
+
+const highlights = [
+  { label: "Invoices sent", value: "25k+" },
+  { label: "Avg. creation time", value: "60 sec" },
+  { label: "Freelancers & teams", value: "3k+" },
+];
+
+const features = [
+  {
+    icon: Zap,
+    title: "Fast Invoice Creation",
+    description:
+      "Build polished invoices quickly with reusable items, saved clients, and smart totals.",
+  },
+  {
+    icon: Layers,
+    title: "Professional PDFs",
+    description:
+      "Generate clean, branded PDFs that are ready to send to clients instantly.",
+  },
+  {
+    icon: CreditCard,
+    title: "Payment Visibility",
+    description:
+      "Track pending and paid invoices in one place so your cash flow stays clear.",
+  },
+  {
+    icon: Users,
+    title: "Client Profiles",
+    description:
+      "Store client details once and reuse them whenever you create new invoices.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Secure by Default",
+    description:
+      "Keep your records protected and accessible whenever you need them.",
+  },
+  {
+    icon: CheckCircle2,
+    title: "Simple Workflow",
+    description:
+      "From draft to payment, each step is straightforward and optimized for speed.",
+  },
+];
+
+const steps = [
+  {
+    number: "01",
+    title: "Add your business details",
+    description:
+      "Set up your profile, logo, and bank details once for consistent invoices.",
+  },
+  {
+    number: "02",
+    title: "Create and send invoices",
+    description:
+      "Select client and items, generate the PDF, and share it in a few clicks.",
+  },
+  {
+    number: "03",
+    title: "Track invoice status",
+    description:
+      "Monitor what is paid, pending, or overdue and follow up at the right time.",
+  },
+];
 
 export default function LandingPage() {
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground">
-      {/* Navigation */}
-      <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-2">
-            <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary text-primary-foreground">
-              <FileText size={16} strokeWidth={2.5} />
+      <header className="sticky top-0 z-50 border-b bg-background/90 backdrop-blur supports-backdrop-filter:bg-background/70">
+        <div className="container mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+          <Link href="/" className="flex items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
+              <FileText className="h-4 w-4" />
             </div>
-            <span className="text-lg font-bold tracking-tight">
-              Invoice<span className="text-primary/80">Flow</span>
+            <span className="text-lg font-semibold tracking-tight">
+              InvoiceFlow
             </span>
-          </div>
-          <nav className="hidden items-center gap-6 md:flex">
-            <Link href="#features" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
+          </Link>
+
+          <nav className="hidden items-center gap-7 md:flex">
+            <Link
+              href="#features"
+              className="text-sm text-muted-foreground hover:text-foreground"
+            >
               Features
             </Link>
-            <Link href="#how-it-works" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
-              How it Works
-            </Link>
-            <Link href="#pricing" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
-              Pricing
+            <Link
+              href="#workflow"
+              className="text-sm text-muted-foreground hover:text-foreground"
+            >
+              Workflow
             </Link>
           </nav>
-          <div className="flex items-center gap-3">
-            <Link href="/login">
-              <Button variant="ghost" size="sm" className="text-sm">
-                Log in
-              </Button>
-            </Link>
-            <Link href="/register">
-              <Button size="sm" className="text-sm font-medium">
-                Get Started
-              </Button>
-            </Link>
+
+          <div className="flex items-center gap-2">
+            <Button asChild variant="ghost" size="sm">
+              <Link href="/login">Log in</Link>
+            </Button>
+            <Button asChild size="sm">
+              <Link href="/register">Get started</Link>
+            </Button>
           </div>
         </div>
       </header>
 
       <main className="flex-1">
-        {/* Hero Section */}
-        <section className="container relative mx-auto max-w-7xl px-4 pt-24 pb-24 sm:px-6 lg:pt-32 lg:pb-40">
-          <div className="flex flex-col items-center text-center">
-            <div className="inline-flex items-center rounded-full border border-border bg-muted px-3 py-1 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted/80">
-              <span className="mr-1">✨</span> New: Professional PDF Templates
-            </div>
-            <h1 className="mt-6 text-4xl font-extrabold tracking-tight sm:text-6xl lg:text-7xl">
-              Invoice <span className="text-primary italic">Smarter</span>, <br />
-              Get Paid Faster.
-            </h1>
-            <p className="mt-6 max-w-[42rem] text-lg leading-normal text-muted-foreground sm:text-xl sm:leading-8">
-              The modern invoicing platform for freelancers and small businesses. 
-              Create, manage, and track professional invoices in seconds.
-            </p>
-            <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-              <Link href="/register">
-                <Button size="lg" className="h-12 px-8 text-base font-semibold shadow-sm">
-                  Start Creating Free
-                  <ArrowRight className="ml-2 h-4 w-4" />
+        <section className="container mx-auto max-w-7xl px-4 pb-16 pt-14 sm:px-6 lg:px-8 lg:pt-20">
+          <div className="grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14">
+            <div>
+              <Badge variant="secondary" className="mb-5">
+                Built for freelancers and small teams
+              </Badge>
+              <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl lg:text-6xl">
+                Invoicing that feels easy and gets you paid faster.
+              </h1>
+              <p className="mt-5 max-w-xl text-base text-muted-foreground sm:text-lg">
+                Create professional invoices, send them quickly, and track
+                payments with a clean workflow designed for daily use.
+              </p>
+
+              <div className="mt-8 flex flex-wrap items-center gap-3">
+                <Button asChild size="lg" className="h-11 px-6">
+                  <Link href="/register">
+                    Start for free
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
                 </Button>
-              </Link>
-              <Button 
-                variant="outline" 
-                size="lg" 
-                className="h-12 px-8 text-base font-semibold"
-                onClick={() => window.location.href = "/api/auth/google"}
-              >
-                <GoogleIcon className="mr-2 h-4 w-4" />
-                Continue with Google
-              </Button>
-            </div>
-          </div>
+                <Button
+                  asChild
+                  size="lg"
+                  variant="outline"
+                  className="h-11 px-6"
+                >
+                  <Link href="/api/auth/google">
+                    <GoogleIcon className="h-4 w-4" />
+                    Continue with Google
+                  </Link>
+                </Button>
+              </div>
 
-          {/* Mockup Image Placeholder */}
-          <div className="mt-16 sm:mt-24">
-            <div className="relative rounded-xl border border-border bg-card p-2 shadow-2xl lg:rounded-2xl lg:p-4">
-              <div className="rounded-lg border border-border bg-background shadow-sm overflow-hidden">
-                <div className="flex items-center justify-between border-b border-border bg-muted/50 px-4 py-2">
-                  <div className="flex gap-1.5">
-                    <div className="h-2.5 w-2.5 rounded-full bg-border" />
-                    <div className="h-2.5 w-2.5 rounded-full bg-border" />
-                    <div className="h-2.5 w-2.5 rounded-full bg-border" />
+              <div className="mt-9 grid grid-cols-1 gap-3 sm:grid-cols-3">
+                {highlights.map((item) => (
+                  <div
+                    key={item.label}
+                    className="rounded-lg border bg-card px-4 py-3"
+                  >
+                    <p className="text-xl font-semibold tracking-tight">
+                      {item.value}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {item.label}
+                    </p>
                   </div>
-                  <div className="h-4 w-32 rounded bg-border/50" />
+                ))}
+              </div>
+            </div>
+
+            <Card className="overflow-hidden border-border/80">
+              <CardHeader className="border-b pb-5">
+                <CardTitle className="text-base">Invoice Preview</CardTitle>
+                <CardDescription>
+                  See totals and status at a glance before sending.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6 pt-6">
+                <div className="space-y-4">
+                  {[
+                    "Website design",
+                    "Monthly maintenance",
+                    "SEO retainer",
+                  ].map((item, index) => (
+                    <div
+                      key={item}
+                      className="flex items-center justify-between border-b pb-3 last:border-0"
+                    >
+                      <div>
+                        <p className="text-sm font-medium">{item}</p>
+                        <p className="text-xs text-muted-foreground">
+                          Qty {index + 1}
+                        </p>
+                      </div>
+                      <p className="text-sm font-semibold">
+                        ₹{(index + 2) * 1800}
+                      </p>
+                    </div>
+                  ))}
                 </div>
-                <div className="p-6 sm:p-10">
-                  <div className="grid grid-cols-1 md:grid-cols-12 gap-10">
-                    <div className="md:col-span-8 space-y-8">
-                      <div className="flex justify-between items-start">
-                        <div className="space-y-3">
-                          <div className="h-8 w-40 rounded bg-primary/10" />
-                          <div className="h-4 w-60 rounded bg-muted" />
-                        </div>
-                        <div className="h-12 w-12 rounded bg-muted" />
-                      </div>
-                      <div className="space-y-4">
-                         {[1,2,3].map(i => (
-                           <div key={i} className="flex justify-between items-center py-4 border-b border-border last:border-0">
-                              <div className="space-y-1.5">
-                                <div className="h-4 w-32 rounded bg-foreground/10" />
-                                <div className="h-3 w-20 rounded bg-muted" />
-                              </div>
-                              <div className="h-4 w-16 rounded bg-foreground/10" />
-                           </div>
-                         ))}
-                      </div>
-                    </div>
-                    <div className="md:col-span-4 space-y-6">
-                       <div className="rounded-lg border border-border bg-muted/30 p-5 space-y-4">
-                          <div className="h-4 w-24 rounded bg-muted-foreground/20" />
-                          <div className="h-10 w-full rounded bg-foreground/5" />
-                          <div className="h-10 w-full rounded bg-primary" />
-                       </div>
-                    </div>
+
+                <div className="rounded-lg border bg-muted/30 p-4">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Total</span>
+                    <span className="font-semibold">₹16,200</span>
+                  </div>
+                  <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
+                    <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
+                    Ready to send as PDF
                   </div>
                 </div>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           </div>
         </section>
 
-        {/* Features Section */}
-        <section id="features" className="border-t border-border bg-muted/30 py-24 sm:py-32">
+        <section id="features" className="border-y bg-muted/30 py-16 sm:py-20">
           <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="mx-auto max-w-2xl text-center">
-              <h2 className="text-sm font-semibold uppercase tracking-wider text-primary">Features</h2>
-              <p className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
-                Everything you need to get paid.
-              </p>
-              <p className="mt-6 text-lg leading-8 text-muted-foreground">
-                Focus on your work, not your paperwork. Our automated tools handle the details so you don't have to.
+            <div className="max-w-2xl">
+              <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
+                Everything needed to run invoicing smoothly
+              </h2>
+              <p className="mt-3 text-muted-foreground">
+                A focused toolkit for creating invoices, keeping records, and
+                staying on top of payments.
               </p>
             </div>
-            <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
-              <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-12 lg:max-w-none lg:grid-cols-3">
-                <Feature 
-                  icon={<Zap className="h-5 w-5" />}
-                  title="Fast Creation"
-                  description="Generate professional invoices in under 60 seconds. Save items and clients for even faster workflows."
-                />
-                <Feature 
-                  icon={<ShieldCheck className="h-5 w-5" />}
-                  title="Secure Storage"
-                  description="Your data is encrypted and backed up daily. Never worry about losing an important document again."
-                />
-                <Feature 
-                  icon={<Layers className="h-5 w-5" />}
-                  title="Professional PDF"
-                  description="Beautiful, modern PDF templates that look great on any device. Fully customizable with your brand."
-                />
-                <Feature 
-                  icon={<Users className="h-5 w-5" />}
-                  title="Client Management"
-                  description="Keep all your client info in one place. Track their payment history and send automated reminders."
-                />
-                <Feature 
-                  icon={<CreditCard className="h-5 w-5" />}
-                  title="Payment Tracking"
-                  description="See exactly who owes you money and when it's due. Monitor your cashflow with intuitive dashboards."
-                />
-                <Feature 
-                  icon={<CheckCircle2 className="h-5 w-5" />}
-                  title="Developer API"
-                  description="Integrate with your existing tools. Our robust API allows for custom workflows and automation."
-                />
-              </dl>
+
+            <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {features.map((feature) => (
+                <Card key={feature.title} className="gap-4">
+                  <CardHeader className="pb-0">
+                    <div className="mb-1 flex h-9 w-9 items-center justify-center rounded-md bg-primary/10 text-primary">
+                      <feature.icon className="h-4 w-4" />
+                    </div>
+                    <CardTitle className="text-base">{feature.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <CardDescription className="text-sm">
+                      {feature.description}
+                    </CardDescription>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           </div>
         </section>
 
-        {/* How it Works Section */}
-        <section id="how-it-works" className="py-24 sm:py-32">
-          <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="mx-auto max-w-2xl text-center">
-              <h2 className="text-sm font-semibold uppercase tracking-wider text-primary">Workflow</h2>
-              <p className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
-                Simple and efficient.
-              </p>
-            </div>
-            <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
-              <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">
-                <Step 
-                  number="01"
-                  title="Setup Profile"
-                  description="Add your business details, logo, and bank account info to get started in minutes."
-                />
-                <Step 
-                  number="02"
-                  title="Create & Send"
-                  description="Choose a template, add your items, and send your invoice directly via email or link."
-                />
-                <Step 
-                  number="03"
-                  title="Track Payments"
-                  description="Monitor your dashboard to see when invoices are viewed and get notified when payments arrive."
-                />
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Pricing Section */}
-        <section id="pricing" className="border-t border-border bg-muted/30 py-24 sm:py-32">
-          <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="mx-auto max-w-2xl text-center">
-              <h2 className="text-sm font-semibold uppercase tracking-wider text-primary">Pricing</h2>
-              <p className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
-                Pay as you grow.
-              </p>
-            </div>
-            <div className="mx-auto mt-16 grid max-w-lg grid-cols-1 gap-6 sm:mt-20 lg:max-w-none lg:grid-cols-2 lg:gap-8">
-              <div className="flex flex-col justify-between rounded-2xl border border-border bg-card p-8 shadow-sm xl:p-10">
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold leading-8">Free</h3>
-                  <p className="text-sm leading-6 text-muted-foreground">Perfect for freelancers just starting out.</p>
-                  <p className="flex items-baseline gap-x-1">
-                    <span className="text-4xl font-bold tracking-tight">$0</span>
-                    <span className="text-sm font-semibold leading-6 text-muted-foreground">/month</span>
-                  </p>
-                  <ul role="list" className="space-y-3 text-sm leading-6 text-muted-foreground pt-6">
-                    <li className="flex gap-x-3">
-                      <CheckCircle2 className="h-5 w-5 flex-none text-primary" /> Up to 5 invoices / month
-                    </li>
-                    <li className="flex gap-x-3">
-                      <CheckCircle2 className="h-5 w-5 flex-none text-primary" /> Standard PDF template
-                    </li>
-                    <li className="flex gap-x-3">
-                      <CheckCircle2 className="h-5 w-5 flex-none text-primary" /> Basic dashboard
-                    </li>
-                  </ul>
-                </div>
-                <Link href="/register" className="mt-8">
-                  <Button variant="outline" className="w-full">Get Started</Button>
-                </Link>
-              </div>
-              <div className="relative flex flex-col justify-between rounded-2xl border-2 border-primary bg-card p-8 shadow-md xl:p-10">
-                <div className="absolute top-0 right-10 -translate-y-1/2 rounded-full bg-primary px-3 py-1 text-xs font-bold text-primary-foreground">
-                  MOST POPULAR
-                </div>
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold leading-8 text-primary">Pro</h3>
-                  <p className="text-sm leading-6 text-muted-foreground">For growing businesses needing more power.</p>
-                  <p className="flex items-baseline gap-x-1">
-                    <span className="text-4xl font-bold tracking-tight">$12</span>
-                    <span className="text-sm font-semibold leading-6 text-muted-foreground">/month</span>
-                  </p>
-                  <ul role="list" className="space-y-3 text-sm leading-6 text-muted-foreground pt-6">
-                    <li className="flex gap-x-3">
-                      <CheckCircle2 className="h-5 w-5 flex-none text-primary" /> Unlimited invoices
-                    </li>
-                    <li className="flex gap-x-3">
-                      <CheckCircle2 className="h-5 w-5 flex-none text-primary" /> Premium templates
-                    </li>
-                    <li className="flex gap-x-3">
-                      <CheckCircle2 className="h-5 w-5 flex-none text-primary" /> Detailed analytics
-                    </li>
-                    <li className="flex gap-x-3">
-                      <CheckCircle2 className="h-5 w-5 flex-none text-primary" /> Priority support
-                    </li>
-                  </ul>
-                </div>
-                <Link href="/register" className="mt-8">
-                  <Button className="w-full">Start Free Trial</Button>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* CTA Section */}
-        <section className="container mx-auto max-w-5xl py-24 sm:py-32">
-          <div className="relative isolate overflow-hidden bg-primary px-6 py-24 shadow-2xl rounded-3xl sm:px-24 xl:py-32">
-            <h2 className="mx-auto max-w-2xl text-center text-3xl font-bold tracking-tight text-primary-foreground sm:text-4xl">
-              Ready to streamline your invoicing?
+        <section
+          id="workflow"
+          className="container mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8"
+        >
+          <div className="max-w-2xl">
+            <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
+              How it works
             </h2>
-            <p className="mx-auto mt-6 max-w-xl text-center text-lg leading-8 text-primary-foreground/80">
-              Join thousands of freelancers who trust InvoiceFlow for their business.
+            <p className="mt-3 text-muted-foreground">
+              Set up once, then invoice with confidence every time.
             </p>
-            <div className="mt-10 flex items-center justify-center gap-x-6">
-              <Link href="/register">
-                <Button variant="secondary" size="lg" className="font-semibold">
-                  Get started for free
+          </div>
+
+          <div className="mt-10 grid gap-4 lg:grid-cols-3">
+            {steps.map((step) => (
+              <Card key={step.number}>
+                <CardHeader className="pb-3">
+                  <p className="text-xs font-semibold tracking-wider text-primary">
+                    STEP {step.number}
+                  </p>
+                  <CardTitle className="text-base">{step.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription className="text-sm">
+                    {step.description}
+                  </CardDescription>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </section>
+
+        <section className="container mx-auto max-w-7xl px-4 pb-20 sm:px-6 lg:px-8">
+          <div className="rounded-2xl bg-primary px-6 py-10 text-primary-foreground sm:px-10 sm:py-12">
+            <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h3 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+                  Ready to simplify your invoicing?
+                </h3>
+                <p className="mt-2 text-sm text-primary-foreground/80 sm:text-base">
+                  Join now and create your first professional invoice in
+                  minutes.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <Button asChild variant="secondary" size="lg">
+                  <Link href="/register">Create free account</Link>
                 </Button>
-              </Link>
-              <Link href="/login" className="text-sm font-semibold leading-6 text-primary-foreground">
-                Sign in <span aria-hidden="true">→</span>
-              </Link>
+                <Button
+                  asChild
+                  variant="outline"
+                  size="lg"
+                  className="border-primary-foreground/40 bg-transparent text-primary-foreground hover:bg-primary-foreground hover:text-primary"
+                >
+                  <Link href="/login">Sign in</Link>
+                </Button>
+              </div>
             </div>
           </div>
         </section>
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-border bg-background py-12">
-        <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
-            <div className="flex items-center gap-2">
-              <div className="flex h-6 w-6 items-center justify-center rounded bg-primary text-primary-foreground">
-                <FileText size={14} strokeWidth={2.5} />
-              </div>
-              <span className="text-base font-bold tracking-tight">
-                InvoiceFlow
-              </span>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} InvoiceFlow Inc.
-            </p>
-            <div className="flex gap-4">
-               {/* Icons could go here */}
-               <div className="h-4 w-4 rounded bg-muted" />
-               <div className="h-4 w-4 rounded bg-muted" />
-            </div>
-          </div>
+      <footer className="border-t py-8">
+        <div className="container mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-4 text-sm text-muted-foreground sm:flex-row sm:px-6 lg:px-8">
+          <p>© {new Date().getFullYear()} InvoiceFlow</p>
+          <p>Made for faster billing workflows</p>
         </div>
       </footer>
-    </div>
-  );
-}
-
-function Feature({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
-  return (
-    <div className="relative space-y-3">
-      <div className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-        {icon}
-      </div>
-      <dt className="text-lg font-bold">{title}</dt>
-      <dd className="text-base leading-7 text-muted-foreground">{description}</dd>
-    </div>
-  );
-}
-
-function Step({ number, title, description }: { number: string; title: string; description: string }) {
-  return (
-    <div className="relative space-y-4">
-      <div className="text-4xl font-black text-muted/50">{number}</div>
-      <h3 className="text-xl font-bold">{title}</h3>
-      <p className="text-muted-foreground">{description}</p>
     </div>
   );
 }

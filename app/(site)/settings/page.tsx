@@ -1,9 +1,12 @@
-import { getServerUserDetails } from "@/lib/server/data";
+import { getServerUserDetails, getServerUserImage } from "@/lib/server/data";
 import BusinessProfileForm from "@/components/Settings/BusinessProfileForm";
 import { Building2 } from "lucide-react";
 
 const Page = async () => {
-  const userDetails = await getServerUserDetails("userDetail");
+  const [userDetails, userImage] = await Promise.all([
+    getServerUserDetails("userDetail"),
+    getServerUserImage(),
+  ]);
   const userDetail = userDetails[0] ?? null;
 
   return (
@@ -23,7 +26,7 @@ const Page = async () => {
         </div>
       </div>
 
-      <BusinessProfileForm initial={userDetail} />
+      <BusinessProfileForm initial={userDetail} initialLogo={userImage?.bussinessLogo ?? null} />
     </div>
   );
 };
