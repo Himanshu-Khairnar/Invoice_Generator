@@ -65,26 +65,33 @@ export async function PUT(
       const totals = calcInvoiceTotals(products, paidAmount);
       update = { ...body, products, ...totals };
 
-      // Increment timesInvoiced for newly added catalog items + sync price for all catalog items
-      const oldItemIds = new Set(
-        (existing.products ?? []).map((p: any) => p.itemId?.toString()).filter(Boolean)
-      );
-      const catalogProducts = products.filter((p: any) => p.itemId);
-      const newItemIds = catalogProducts
-        .map((p: any) => p.itemId?.toString())
-        .filter((id: string) => id && !oldItemIds.has(id));
+      // Build a map of old lineTotal per itemId for diffing
+      const oldLineTotalByItemId = new Map<string, number>();
+      const oldItemIds = new Set<string>();
+      for (const p of (existing.products ?? [])) {
+        if (p.itemId) {
+          const key = p.itemId.toString();
+          oldItemIds.add(key);
+          oldLineTotalByItemId.set(key, p.lineTotal ?? 0);
+        }
+      }
 
-      await Promise.all([
-        newItemIds.length
-          ? Item.updateMany(
-              { _id: { $in: newItemIds } },
-              { $inc: { timesInvoiced: 1 } }
-            )
-          : Promise.resolve(),
-        ...catalogProducts.map((p: any) =>
-          Item.findByIdAndUpdate(p.itemId, { productPrice: p.productPrice })
-        ),
-      ]);
+      const catalogProducts = products.filter((p: any) => p.itemId);
+
+      await Promise.all(
+        catalogProducts.map((p: any) => {
+          const key = p.itemId.toString();
+          const isNew = !oldItemIds.has(key);
+          const lineTotalDiff = (p.lineTotal ?? 0) - (oldLineTotalByItemId.get(key) ?? 0);
+          return Item.findByIdAndUpdate(p.itemId, {
+            $inc: {
+              ...(isNew ? { timesInvoiced: 1 } : {}),
+              totalInvoiced: lineTotalDiff,
+            },
+            productPrice: p.productPrice,
+          });
+        })
+      );
     }
 
     // Increment timesInvoiced on client if clientDetailId changed

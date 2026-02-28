@@ -7,6 +7,7 @@ export interface IItem {
   productPrice: number;
   taxSlab: number;
   timesInvoiced?: number;
+  totalInvoiced?: number;
   status?: "archived" | "unarchived";
   unit?: string;
   discount?: number;

@@ -35,6 +35,11 @@ const ItemSchema = new mongoose.Schema<IItem>(
       default: 0,
       min: 0,
     },
+    totalInvoiced: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
     status: {
       type: String,
       required: true,
