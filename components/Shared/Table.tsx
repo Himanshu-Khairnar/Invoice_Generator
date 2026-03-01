@@ -175,7 +175,7 @@ const ItemsTable = ({
                         <TableCell className="text-center">₹{(product.productPrice ?? 0).toLocaleString()}</TableCell>
                         <TableCell className="text-center">{product.timesInvoiced ?? 0}</TableCell>
                         <TableCell className="text-center font-bold">
-                          ₹{((product.timesInvoiced ?? 0) * (product.productPrice ?? 0)).toLocaleString()}
+                          ₹{(product.totalInvoiced ?? 0).toLocaleString()}
                         </TableCell>
                         <TableCell className="text-right">
                            <DropdownMenu>

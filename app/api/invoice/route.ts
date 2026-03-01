@@ -78,18 +78,17 @@ export async function POST(request: NextRequest) {
       ...totals,
     });
 
-    // Update catalog items: increment timesInvoiced and sync productPrice
+    // Update catalog items: increment timesInvoiced, add lineTotal to totalInvoiced, sync productPrice
     const catalogProducts = products.filter((p: any) => p.itemId);
     if (catalogProducts.length) {
-      await Promise.all([
-        Item.updateMany(
-          { _id: { $in: catalogProducts.map((p: any) => p.itemId) } },
-          { $inc: { timesInvoiced: 1 } }
-        ),
-        ...catalogProducts.map((p: any) =>
-          Item.findByIdAndUpdate(p.itemId, { productPrice: p.productPrice })
-        ),
-      ]);
+      await Promise.all(
+        catalogProducts.map((p: any) =>
+          Item.findByIdAndUpdate(p.itemId, {
+            $inc: { timesInvoiced: 1, totalInvoiced: p.lineTotal ?? 0 },
+            productPrice: p.productPrice,
+          })
+        )
+      );
     }
 
     // Increment timesInvoiced on the client used in this invoice
