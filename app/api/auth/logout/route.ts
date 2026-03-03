@@ -7,8 +7,9 @@ const response = NextResponse.json(
   );
   response.cookies.set("access_token", "", {
     httpOnly: true,
-    secure: true,
-    expires: new Date(0),
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: 0,
     path: "/"
   });
 

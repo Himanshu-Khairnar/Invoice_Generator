@@ -86,11 +86,11 @@ export async function POST(
 
     // Generate PDF attachment
     const invoiceHTML = generateInvoiceHTML(invoice, business, client, businessLogo);
-    const pdfBuffer = await generatePDFFromHTML(invoiceHTML);
+    const pdfBuffer = await generatePDFFromHTML(invoiceHTML, invoice, business, client, businessLogo);
     const pdfFilename = `Invoice-${invoice.invoiceNumber}.pdf`;
 
     const mailOptions = {
-      from: `"${business?.name ?? "InvoiceApp"}" <${process.env.EMAIL_FROM}>`,
+      from: `"${business?.name ?? "BillPartner"}" <${process.env.EMAIL_FROM}>`,
       to: client.email,
       cc: business?.email ?? undefined,
       subject: `Invoice #${invoice.invoiceNumber} — ₹${(invoice.totalAmount ?? 0).toFixed(2)} due`,

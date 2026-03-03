@@ -33,7 +33,7 @@ export default function HomePage() {
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
           <div className="flex items-center gap-2 text-lg font-semibold tracking-tight">
             <div className="h-9 w-9 rounded-xl bg-emerald-400/20 ring-1 ring-emerald-200/50" />
-            <span className="text-emerald-200">InvoiceFlow</span>
+            <span className="text-emerald-200">BillPartner</span>
           </div>
           <div className="flex items-center gap-3 text-sm">
             <Link

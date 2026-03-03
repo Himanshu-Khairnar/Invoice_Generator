@@ -38,9 +38,10 @@ const response = NextResponse.json(
   );
   response.cookies.set("access_token", token, {
     httpOnly: true,
-    secure: true,
-    sameSite: "strict",
-    path: "/"
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: 60 * 60 * 24 * 7 // 7 days
   });
 
   return response;

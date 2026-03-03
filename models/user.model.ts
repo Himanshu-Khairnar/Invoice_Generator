@@ -14,6 +14,8 @@ const UserSchema = new mongoose.Schema<IUser>(
     profilePicture: { type: String, required: false },
     provider: { type: String, required: false },
     providerId: { type: String, required: false },
+    loginOtp: { type: String, required: false },
+    loginOtpExpiry: { type: Date, required: false },
   },
   { timestamps: true }
 );

@@ -31,6 +31,8 @@ export interface IInvoice {
   totalAmount?: number;
   paidAmount?: number;
   balanceDue?: number;
+  payOtp?: string;
+  payOtpExpiry?: Date;
   createdAt?: Date;
   updatedAt?: Date;
 }

@@ -19,6 +19,19 @@ async function getUserId(): Promise<string | null> {
   }
 }
 
+export async function getServerInvoiceById(id: string) {
+  const userId = await getUserId();
+  if (!userId) return null;
+  await dbConnect();
+  const invoice = await Invoice.findOne({ _id: id, userId })
+    .populate("userImageId")
+    .populate("userDetailId")
+    .populate("clientDetailId")
+    .populate("bankDetails")
+    .lean();
+  return invoice ? JSON.parse(JSON.stringify(invoice)) : null;
+}
+
 export async function getServerInvoices() {
   const userId = await getUserId();
   if (!userId) return [];

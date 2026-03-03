@@ -4,37 +4,37 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: hsl(0 0% 98.8235%);
+  --background: hsl(40 40% 98%);
   --foreground: hsl(0 0% 9.0196%);
-  --card: hsl(0 0% 98.8235%);
+  --card: hsl(40 40% 98%);
   --card-foreground: hsl(0 0% 9.0196%);
-  --popover: hsl(0 0% 98.8235%);
+  --popover: hsl(40 40% 98%);
   --popover-foreground: hsl(0 0% 32.1569%);
-  --primary: hsl(151.3274 66.8639% 66.8627%);
+  --primary: #72e3ad;
   --primary-foreground: hsl(153.3333 13.0435% 13.5294%);
-  --secondary: hsl(0 0% 99.2157%);
+  --secondary: hsl(40 30% 95%);
   --secondary-foreground: hsl(0 0% 9.0196%);
-  --muted: hsl(0 0% 92.9412%);
+  --muted: hsl(40 25% 92%);
   --muted-foreground: hsl(0 0% 12.5490%);
-  --accent: hsl(0 0% 92.9412%);
+  --accent: hsl(40 30% 93%);
   --accent-foreground: hsl(0 0% 12.5490%);
   --destructive: hsl(9.8901 81.9820% 43.5294%);
   --destructive-foreground: hsl(0 100% 99.4118%);
-  --border: hsl(0 0% 87.4510%);
-  --input: hsl(0 0% 96.4706%);
+  --border: hsl(40 20% 88%);
+  --input: hsl(40 30% 94%);
   --ring: hsl(151.3274 66.8639% 66.8627%);
   --chart-1: hsl(151.3274 66.8639% 66.8627%);
   --chart-2: hsl(217.2193 91.2195% 59.8039%);
   --chart-3: hsl(258.3117 89.5349% 66.2745%);
   --chart-4: hsl(37.6923 92.1260% 50.1961%);
   --chart-5: hsl(160.1183 84.0796% 39.4118%);
-  --sidebar: hsl(0 0% 98.8235%);
+  --sidebar: hsl(40 40% 98%);
   --sidebar-foreground: hsl(0 0% 43.9216%);
   --sidebar-primary: hsl(151.3274 66.8639% 66.8627%);
   --sidebar-primary-foreground: hsl(153.3333 13.0435% 13.5294%);
-  --sidebar-accent: hsl(0 0% 92.9412%);
+  --sidebar-accent: hsl(40 30% 93%);
   --sidebar-accent-foreground: hsl(0 0% 12.5490%);
-  --sidebar-border: hsl(0 0% 87.4510%);
+  --sidebar-border: hsl(40 20% 88%);
   --sidebar-ring: hsl(151.3274 66.8639% 66.8627%);
   --font-sans: Outfit, sans-serif;
   --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
@@ -73,8 +73,8 @@
   --muted-foreground: hsl(0 0% 63.5294%);
   --accent: hsl(0 0% 19.2157%);
   --accent-foreground: hsl(0 0% 98.0392%);
-  --destructive: hsl(6.6667 60.0000% 20.5882%);
-  --destructive-foreground: hsl(12.0000 12.1951% 91.9608%);
+  --destructive: hsl(0 84% 60%);
+  --destructive-foreground: hsl(0 0% 98%);
   --border: hsl(0 0% 16.0784%);
   --input: hsl(0 0% 14.1176%);
   --ring: hsl(141.8919 69.1589% 58.0392%);
@@ -175,6 +175,7 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
     letter-spacing: var(--tracking-normal);

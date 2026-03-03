@@ -1,351 +1,522 @@
+"use client";
+
 import Link from "next/link";
+import { motion, Variants } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
   ArrowRight,
   CheckCircle2,
-  CreditCard,
-  FileText,
-  Layers,
   ShieldCheck,
-  Users,
   Zap,
+  ArrowUpRight,
+  BarChart3,
+  FileText,
+  Users,
+  Send,
+  Clock,
+  TrendingUp,
 } from "lucide-react";
 
-const highlights = [
-  { label: "Invoices sent", value: "25k+" },
-  { label: "Avg. creation time", value: "60 sec" },
-  { label: "Freelancers & teams", value: "3k+" },
-];
+const fadeUp: Variants = {
+  hidden: { opacity: 0, y: 24 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { type: "spring", stiffness: 80, damping: 20 },
+  },
+};
 
-const features = [
-  {
-    icon: Zap,
-    title: "Fast Invoice Creation",
-    description:
-      "Build polished invoices quickly with reusable items, saved clients, and smart totals.",
-  },
-  {
-    icon: Layers,
-    title: "Professional PDFs",
-    description:
-      "Generate clean, branded PDFs that are ready to send to clients instantly.",
-  },
-  {
-    icon: CreditCard,
-    title: "Payment Visibility",
-    description:
-      "Track pending and paid invoices in one place so your cash flow stays clear.",
-  },
-  {
-    icon: Users,
-    title: "Client Profiles",
-    description:
-      "Store client details once and reuse them whenever you create new invoices.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Secure by Default",
-    description:
-      "Keep your records protected and accessible whenever you need them.",
-  },
-  {
-    icon: CheckCircle2,
-    title: "Simple Workflow",
-    description:
-      "From draft to payment, each step is straightforward and optimized for speed.",
-  },
-];
-
-const steps = [
-  {
-    number: "01",
-    title: "Add your business details",
-    description:
-      "Set up your profile, logo, and bank details once for consistent invoices.",
-  },
-  {
-    number: "02",
-    title: "Create and send invoices",
-    description:
-      "Select client and items, generate the PDF, and share it in a few clicks.",
-  },
-  {
-    number: "03",
-    title: "Track invoice status",
-    description:
-      "Monitor what is paid, pending, or overdue and follow up at the right time.",
-  },
-];
+const stagger: Variants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.08, delayChildren: 0.05 } },
+};
 
 export default function LandingPage() {
   return (
-    <div className="flex min-h-screen flex-col bg-background text-foreground">
-      <header className="sticky top-0 z-50 border-b bg-background/90 backdrop-blur supports-backdrop-filter:bg-background/70">
-        <div className="container mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
-              <FileText className="h-4 w-4" />
-            </div>
-            <span className="text-lg font-semibold tracking-tight">
-              InvoiceFlow
-            </span>
+    <div className="relative min-h-screen flex flex-col bg-background text-foreground overflow-x-hidden selection:bg-primary/20">
+
+      {/* ─── Background ─── */}
+      <div className="fixed inset-0 -z-20 bg-background" />
+      <div className="fixed inset-0 -z-10 [background-image:radial-gradient(hsl(var(--border))_1px,transparent_1px)] [background-size:24px_24px] [mask-image:radial-gradient(ellipse_70%_55%_at_50%_0%,#000_55%,transparent_100%)]" />
+      <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 -z-10 h-[520px] w-[720px] rounded-full bg-primary/20 blur-[150px] opacity-55 pointer-events-none" />
+
+      {/* ─── Navbar ─── */}
+      <header className="fixed top-0 z-50 w-full border-b border-border/30 bg-background/60 backdrop-blur-2xl">
+        <div className="container mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6">
+          <Link href="/" className="flex items-center gap-2.5">
+            <img src="/invoice-logo.svg" alt="BillPartner" className="h-7 w-7" />
+            <span className="font-bold tracking-tight text-[15px]">BillPartner</span>
           </Link>
 
-          <nav className="hidden items-center gap-7 md:flex">
-            <Link
-              href="#features"
-              className="text-sm text-muted-foreground hover:text-foreground"
-            >
-              Features
-            </Link>
-            <Link
-              href="#workflow"
-              className="text-sm text-muted-foreground hover:text-foreground"
-            >
-              Workflow
-            </Link>
-          </nav>
 
-          <div className="flex items-center gap-2">
-            <Button asChild variant="ghost" size="sm">
-              <Link href="/login">Log in</Link>
+
+          <div className="flex items-center gap-3">
+            <Button asChild variant="ghost" size="sm" className="hidden sm:flex text-sm font-medium">
+              <Link href="/login">Sign in</Link>
             </Button>
-            <Button asChild size="sm">
-              <Link href="/register">Get started</Link>
+            <Button asChild size="sm" className="h-8 rounded-md px-4 text-xs font-semibold shadow-md shadow-primary/20 transition-all hover:scale-105 active:scale-95">
+              <Link href="/register">Get started free</Link>
             </Button>
           </div>
         </div>
       </header>
 
-      <main className="flex-1">
-        <section className="container mx-auto max-w-7xl px-4 pb-16 pt-14 sm:px-6 lg:px-8 lg:pt-20">
-          <div className="grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14">
-            <div>
-              <Badge variant="secondary" className="mb-5">
-                Built for freelancers and small teams
+      <main className="flex-1 pt-14">
+
+        {/* ─── Hero ─── */}
+        <section className="container mx-auto max-w-6xl px-4 sm:px-6 pt-24 pb-20 lg:pt-32 lg:pb-28">
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={stagger}
+            className="flex flex-col items-center text-center"
+          >
+            <motion.div variants={fadeUp}>
+              <Badge
+                variant="outline"
+                className="mb-6 rounded-full border-primary/30 bg-primary/8 px-4 py-1.5 text-sm text-primary backdrop-blur-sm shadow-sm"
+              >
+                <span className="relative flex h-2 w-2 mr-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
+                </span>
+                Invoicing made simple for freelancers
               </Badge>
-              <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl lg:text-6xl">
-                Invoicing that feels easy and gets you paid faster.
-              </h1>
-              <p className="mt-5 max-w-xl text-base text-muted-foreground sm:text-lg">
-                Create professional invoices, send them quickly, and track
-                payments with a clean workflow designed for daily use.
-              </p>
+            </motion.div>
 
-              <div className="mt-8 flex flex-wrap items-center gap-3">
-                <Button asChild size="lg" className="h-11 px-6">
-                  <Link href="/register">
-                    Start for free
-                    <ArrowRight className="h-4 w-4" />
-                  </Link>
-                </Button>
-                <Button
-                  asChild
-                  size="lg"
-                  variant="outline"
-                  className="h-11 px-6"
-                >
-                  <Link href="/api/auth/google">
-                    <GoogleIcon className="h-4 w-4" />
-                    Continue with Google
-                  </Link>
-                </Button>
+            <motion.h1
+              variants={fadeUp}
+              className="text-5xl font-extrabold tracking-tighter sm:text-6xl md:text-7xl text-balance leading-[1.05]"
+            >
+              Get paid faster,{" "}
+              <span className="bg-gradient-to-r from-primary via-emerald-400 to-teal-400 bg-clip-text text-transparent">
+                stress-free.
+              </span>
+            </motion.h1>
+
+            <motion.p
+              variants={fadeUp}
+              className="mt-5 max-w-xl text-lg text-muted-foreground leading-relaxed text-balance"
+            >
+              Create professional invoices, send them to clients in seconds, and track every payment — all in one clean workspace.
+            </motion.p>
+
+            <motion.div variants={fadeUp} className="mt-9 flex flex-col sm:flex-row items-center gap-3">
+              <Button asChild size="lg" className="h-11 rounded-lg px-8 font-semibold shadow-lg shadow-primary/25 transition-all hover:-translate-y-0.5">
+                <Link href="/register">
+                  Start for free <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+              <Button asChild size="lg" variant="outline" className="h-11 rounded-lg px-8 font-medium border-border/60 bg-background/50 hover:bg-muted/40">
+                <Link href="/login">Sign in</Link>
+              </Button>
+            </motion.div>
+          </motion.div>
+
+          {/* ─── Invoice Mockup ─── */}
+          <motion.div
+            initial={{ opacity: 0, y: 48, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.9, delay: 0.35, type: "spring", stiffness: 60 }}
+            className="relative mx-auto mt-20 max-w-3xl"
+          >
+            <div className="absolute -inset-4 -z-10 rounded-3xl bg-gradient-to-b from-primary/20 via-primary/5 to-transparent blur-2xl opacity-60" />
+
+            <div className="rounded-2xl border border-border/40 bg-card/80 backdrop-blur-xl shadow-2xl overflow-hidden ring-1 ring-white/5">
+              {/* Browser chrome */}
+              <div className="flex items-center justify-between border-b border-border/30 bg-muted/30 px-4 py-2.5">
+                <div className="flex gap-1.5">
+                  <div className="h-3 w-3 rounded-full bg-red-400/80" />
+                  <div className="h-3 w-3 rounded-full bg-amber-400/80" />
+                  <div className="h-3 w-3 rounded-full bg-green-400/80" />
+                </div>
+                <div className="flex items-center gap-1.5 rounded-md bg-background/60 px-3 py-1 text-xs font-medium text-muted-foreground border border-border/40">
+                  <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect width="18" height="11" x="3" y="11" rx="2" />
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                  </svg>
+                  app.billpartner.com
+                </div>
+                <div className="w-14" />
               </div>
 
-              <div className="mt-9 grid grid-cols-1 gap-3 sm:grid-cols-3">
-                {highlights.map((item) => (
-                  <div
-                    key={item.label}
-                    className="rounded-lg border bg-card px-4 py-3"
-                  >
-                    <p className="text-xl font-semibold tracking-tight">
-                      {item.value}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {item.label}
-                    </p>
+              <div className="p-6 md:p-10">
+                <div className="flex flex-col sm:flex-row justify-between items-start gap-6 pb-7 border-b border-border/30">
+                  <div className="flex items-center gap-3">
+                    <img src="/invoice-logo.svg" alt="logo" className="h-8 w-8" />
+                    <div>
+                      <p className="font-bold text-foreground">BillPartner</p>
+                      <p className="text-xs text-muted-foreground">your@email.com</p>
+                    </div>
                   </div>
-                ))}
-              </div>
-            </div>
+                  <div className="sm:text-right">
+                    <p className="text-2xl font-bold text-foreground">INVOICE</p>
+                    <p className="text-sm text-muted-foreground mt-0.5">#INV-2026-004</p>
+                    <Badge className="mt-2 rounded-md bg-amber-500/10 text-amber-600 border-amber-500/20 text-xs">
+                      Pending
+                    </Badge>
+                  </div>
+                </div>
 
-            <Card className="overflow-hidden border-border/80">
-              <CardHeader className="border-b pb-5">
-                <CardTitle className="text-base">Invoice Preview</CardTitle>
-                <CardDescription>
-                  See totals and status at a glance before sending.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6 pt-6">
-                <div className="space-y-4">
+                <div className="mt-7 space-y-3">
+                  <div className="grid grid-cols-12 text-xs font-semibold uppercase tracking-wider text-muted-foreground pb-2 border-b border-border/30">
+                    <div className="col-span-7">Description</div>
+                    <div className="col-span-2 text-center">Qty</div>
+                    <div className="col-span-3 text-right">Amount</div>
+                  </div>
                   {[
-                    "Website design",
-                    "Monthly maintenance",
-                    "SEO retainer",
-                  ].map((item, index) => (
-                    <div
-                      key={item}
-                      className="flex items-center justify-between border-b pb-3 last:border-0"
-                    >
-                      <div>
-                        <p className="text-sm font-medium">{item}</p>
-                        <p className="text-xs text-muted-foreground">
-                          Qty {index + 1}
-                        </p>
-                      </div>
-                      <p className="text-sm font-semibold">
-                        ₹{(index + 2) * 1800}
-                      </p>
+                    { desc: "Website Design & Development", qty: "1", amt: "₹48,000" },
+                    { desc: "Monthly Maintenance", qty: "3", amt: "₹18,000" },
+                    { desc: "SEO Retainer", qty: "1", amt: "₹12,000" },
+                  ].map((item, i) => (
+                    <div key={i} className="grid grid-cols-12 text-sm py-2 rounded-md transition-colors hover:bg-muted/20 -mx-2 px-2">
+                      <div className="col-span-7 font-medium text-foreground">{item.desc}</div>
+                      <div className="col-span-2 text-center text-muted-foreground">{item.qty}</div>
+                      <div className="col-span-3 text-right font-semibold text-foreground">{item.amt}</div>
                     </div>
                   ))}
                 </div>
 
-                <div className="rounded-lg border bg-muted/30 p-4">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Total</span>
-                    <span className="font-semibold">₹16,200</span>
-                  </div>
-                  <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
-                    <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
-                    Ready to send as PDF
+                <div className="mt-7 flex justify-end pt-5 border-t border-border/30">
+                  <div className="w-full max-w-xs space-y-2">
+                    <div className="flex justify-between text-sm text-muted-foreground">
+                      <span>Subtotal</span><span className="font-medium text-foreground">₹78,000</span>
+                    </div>
+                    <div className="flex justify-between text-sm text-muted-foreground">
+                      <span>GST (18%)</span><span className="font-medium text-foreground">₹14,040</span>
+                    </div>
+                    <div className="flex justify-between items-center pt-3 border-t border-border/30">
+                      <span className="font-semibold text-foreground">Total Due</span>
+                      <span className="text-xl font-bold text-primary">₹92,040</span>
+                    </div>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          </div>
-        </section>
-
-        <section id="features" className="border-y bg-muted/30 py-16 sm:py-20">
-          <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="max-w-2xl">
-              <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-                Everything needed to run invoicing smoothly
-              </h2>
-              <p className="mt-3 text-muted-foreground">
-                A focused toolkit for creating invoices, keeping records, and
-                staying on top of payments.
-              </p>
+              </div>
             </div>
 
-            <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {features.map((feature) => (
-                <Card key={feature.title} className="gap-4">
-                  <CardHeader className="pb-0">
-                    <div className="mb-1 flex h-9 w-9 items-center justify-center rounded-md bg-primary/10 text-primary">
-                      <feature.icon className="h-4 w-4" />
-                    </div>
-                    <CardTitle className="text-base">{feature.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <CardDescription className="text-sm">
-                      {feature.description}
-                    </CardDescription>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section
-          id="workflow"
-          className="container mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8"
-        >
-          <div className="max-w-2xl">
-            <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-              How it works
-            </h2>
-            <p className="mt-3 text-muted-foreground">
-              Set up once, then invoice with confidence every time.
-            </p>
-          </div>
-
-          <div className="mt-10 grid gap-4 lg:grid-cols-3">
-            {steps.map((step) => (
-              <Card key={step.number}>
-                <CardHeader className="pb-3">
-                  <p className="text-xs font-semibold tracking-wider text-primary">
-                    STEP {step.number}
-                  </p>
-                  <CardTitle className="text-base">{step.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="text-sm">
-                    {step.description}
-                  </CardDescription>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </section>
-
-        <section className="container mx-auto max-w-7xl px-4 pb-20 sm:px-6 lg:px-8">
-          <div className="rounded-2xl bg-primary px-6 py-10 text-primary-foreground sm:px-10 sm:py-12">
-            <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+            {/* Floating badge */}
+            <motion.div
+              initial={{ opacity: 0, y: 16, x: 16 }}
+              animate={{ opacity: 1, y: 0, x: 0 }}
+              transition={{ delay: 1.1, type: "spring", stiffness: 100 }}
+              className="absolute -bottom-5 -right-4 md:-right-10 rounded-xl border border-border/40 bg-background/90 backdrop-blur-xl p-3.5 shadow-2xl flex items-center gap-3 ring-1 ring-white/5"
+            >
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10">
+                <CheckCircle2 className="h-5 w-5 text-primary" />
+              </div>
               <div>
-                <h3 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-                  Ready to simplify your invoicing?
-                </h3>
-                <p className="mt-2 text-sm text-primary-foreground/80 sm:text-base">
-                  Join now and create your first professional invoice in
-                  minutes.
-                </p>
+                <p className="text-sm font-bold text-foreground">Payment Received</p>
+                <p className="text-xs text-muted-foreground">₹92,040 from Acme Corp</p>
               </div>
-              <div className="flex flex-wrap gap-3">
-                <Button asChild variant="secondary" size="lg">
-                  <Link href="/register">Create free account</Link>
+            </motion.div>
+          </motion.div>
+        </section>
+
+        {/* ─── Bento Features Grid ─── */}
+        <section id="features" className="border-y border-border/20 bg-muted/10 relative py-24">
+          <div className="absolute inset-0 [background-image:linear-gradient(to_right,hsl(var(--border)/0.5)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--border)/0.5)_1px,transparent_1px)] [background-size:48px_48px] [mask-image:radial-gradient(ellipse_90%_70%_at_50%_50%,#000_40%,transparent_100%)] pointer-events-none" />
+
+          <div className="container mx-auto max-w-6xl px-4 sm:px-6 relative">
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-80px" }}
+              variants={stagger}
+              className="mb-14"
+            >
+              <motion.p variants={fadeUp} className="text-sm font-semibold uppercase tracking-widest text-primary mb-3">
+                Features
+              </motion.p>
+              <motion.h2 variants={fadeUp} className="text-3xl font-bold tracking-tight sm:text-4xl max-w-xl">
+                Everything you need, nothing you don&apos;t.
+              </motion.h2>
+              <motion.p variants={fadeUp} className="mt-3 text-muted-foreground text-lg max-w-lg">
+                A focused toolkit for invoicing, clients, and payments — built for real daily use.
+              </motion.p>
+            </motion.div>
+
+            {/* Bento Grid */}
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-60px" }}
+              variants={stagger}
+              className="grid grid-cols-1 md:grid-cols-3 gap-4 auto-rows-auto"
+            >
+              {/* Card 1 — Wide (2 cols), Lightning Fast */}
+              <motion.div variants={fadeUp} className="md:col-span-2">
+                <BentoCard
+                  icon={<Zap className="h-5 w-5 text-primary" />}
+                  tag="Editor"
+                  title="Lightning Fast Invoice Creation"
+                  description="Select a saved client, add your line items, and generate a polished invoice in under 60 seconds. No repetitive data entry."
+                  accent="from-primary/12 via-primary/4 to-transparent"
+                  visual={
+                    <div className="mt-6 rounded-xl border border-border/40 bg-background/50 p-4 space-y-2.5">
+                      {["Website Design — ₹48,000", "SEO Retainer — ₹12,000", "Maintenance — ₹6,000"].map((line, i) => (
+                        <div key={i} className="flex items-center gap-2.5">
+                          <div className="h-1.5 w-1.5 rounded-full bg-primary/60 shrink-0" />
+                          <div className="flex-1 h-2 rounded-full bg-muted/80" style={{ width: `${85 - i * 15}%` }}>
+                            <div className="h-full rounded-full bg-primary/25" style={{ width: "100%" }} />
+                          </div>
+                          <span className="text-xs text-muted-foreground shrink-0 font-medium">{line.split("—")[1]?.trim()}</span>
+                        </div>
+                      ))}
+                      <div className="pt-2 border-t border-border/30 flex justify-between items-center">
+                        <span className="text-xs text-muted-foreground font-medium">Total</span>
+                        <span className="text-sm font-bold text-primary">₹66,000</span>
+                      </div>
+                    </div>
+                  }
+                />
+              </motion.div>
+
+              {/* Card 2 — Tall (1 col, 2 rows), Send Invoices */}
+              <motion.div variants={fadeUp} className="md:row-span-2">
+                <BentoCard
+                  icon={<Send className="h-5 w-5 text-primary" />}
+                  tag="Email"
+                  title="Send Directly to Clients"
+                  description="Email polished PDF invoices to your clients straight from the dashboard. No manual downloading or attaching files."
+                  accent="from-teal-400/12 via-teal-400/4 to-transparent"
+                  tall
+                  visual={
+                    <div className="mt-6 space-y-3">
+                      <div className="rounded-xl border border-border/40 bg-background/50 p-3.5">
+                        <div className="flex items-center gap-2 mb-2.5">
+                          <div className="h-7 w-7 rounded-full bg-primary/15 flex items-center justify-center">
+                            <span className="text-xs font-bold text-primary">AC</span>
+                          </div>
+                          <div>
+                            <p className="text-xs font-semibold text-foreground">Acme Corp</p>
+                            <p className="text-[10px] text-muted-foreground">acme@example.com</p>
+                          </div>
+                        </div>
+                        <div className="space-y-1.5">
+                          <div className="h-1.5 w-full rounded-full bg-muted/60" />
+                          <div className="h-1.5 w-4/5 rounded-full bg-muted/60" />
+                          <div className="h-1.5 w-3/5 rounded-full bg-muted/60" />
+                        </div>
+                        <div className="mt-3 flex items-center gap-1.5">
+                          <div className="h-5 w-5 rounded bg-primary/10 flex items-center justify-center">
+                            <FileText className="h-3 w-3 text-primary" />
+                          </div>
+                          <span className="text-[10px] text-muted-foreground">INV-2026-004.pdf</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 rounded-lg bg-primary/8 border border-primary/20 p-2.5">
+                        <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
+                        <span className="text-xs font-medium text-primary">Invoice delivered</span>
+                      </div>
+                      <div className="rounded-xl border border-border/40 bg-background/50 p-3 space-y-2">
+                        <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Upcoming</p>
+                        {["TechVision — Due in 3d", "StartupXY — Due in 7d"].map((item) => (
+                          <div key={item} className="flex items-center justify-between">
+                            <div className="flex items-center gap-1.5">
+                              <Clock className="h-3 w-3 text-muted-foreground" />
+                              <span className="text-xs text-foreground">{item.split("—")[0]}</span>
+                            </div>
+                            <span className="text-[10px] text-amber-500 font-medium">{item.split("—")[1]?.trim()}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  }
+                />
+              </motion.div>
+
+              {/* Card 3 — Normal, Client Profiles */}
+              <motion.div variants={fadeUp} className="md:col-span-1">
+                <BentoCard
+                  icon={<Users className="h-5 w-5 text-primary" />}
+                  tag="Clients"
+                  title="Client Profiles"
+                  description="Save client details once. Auto-fill them into any new invoice instantly."
+                  accent="from-emerald-400/10 to-transparent"
+                  visual={
+                    <div className="mt-4 space-y-2">
+                      {[
+                        { name: "Acme Corp", initials: "AC", invoices: 12 },
+                        { name: "TechVision", initials: "TV", invoices: 7 },
+                        { name: "StartupXY", initials: "SX", invoices: 4 },
+                      ].map((c) => (
+                        <div key={c.name} className="flex items-center gap-2.5 rounded-lg border border-border/30 bg-background/40 px-3 py-2">
+                          <div className="h-7 w-7 rounded-full bg-primary/15 flex items-center justify-center shrink-0">
+                            <span className="text-[10px] font-bold text-primary">{c.initials}</span>
+                          </div>
+                          <span className="text-sm font-medium text-foreground flex-1">{c.name}</span>
+                          <span className="text-xs text-muted-foreground">{c.invoices} inv</span>
+                        </div>
+                      ))}
+                    </div>
+                  }
+                />
+              </motion.div>
+
+              {/* Card 4 — Normal, Revenue Tracking */}
+              <motion.div variants={fadeUp} className="md:col-span-1">
+                <BentoCard
+                  icon={<BarChart3 className="h-5 w-5 text-primary" />}
+                  tag="Analytics"
+                  title="Revenue Tracking"
+                  description="Monitor paid, pending, and overdue invoices so your cash flow stays clear."
+                  accent="from-emerald-300/10 to-transparent"
+                  visual={
+                    <div className="mt-4 space-y-2.5">
+                      {[
+                        { label: "Paid", value: "₹1,24,000", pct: 72, color: "bg-primary" },
+                        { label: "Pending", value: "₹38,500", pct: 22, color: "bg-amber-400" },
+                        { label: "Overdue", value: "₹10,200", pct: 6, color: "bg-destructive" },
+                      ].map((r) => (
+                        <div key={r.label} className="space-y-1">
+                          <div className="flex justify-between text-xs">
+                            <span className="text-muted-foreground">{r.label}</span>
+                            <span className="font-semibold text-foreground">{r.value}</span>
+                          </div>
+                          <div className="h-1.5 w-full rounded-full bg-muted/50">
+                            <div className={`h-full rounded-full ${r.color}`} style={{ width: `${r.pct}%` }} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  }
+                />
+              </motion.div>
+
+              {/* Card 5 — Full Width (3 cols), PDF & Security */}
+              <motion.div variants={fadeUp} className="md:col-span-3">
+                <div className="grid sm:grid-cols-2 gap-4 h-full">
+                  <BentoCard
+                    icon={<FileText className="h-5 w-5 text-primary" />}
+                    tag="PDF"
+                    title="Branded PDF Invoices"
+                    description="Generate pixel-perfect, branded PDFs with your logo, business address, and bank details — ready to send or download instantly."
+                    accent="from-teal-300/10 to-transparent"
+                    horizontal
+                  />
+                  <BentoCard
+                    icon={<ShieldCheck className="h-5 w-5 text-primary" />}
+                    tag="Security"
+                    title="Secure by Default"
+                    description="Your invoices and client data are encrypted and protected. Access everything from any device, any time, with confidence."
+                    accent="from-primary/10 to-transparent"
+                    horizontal
+                  />
+                </div>
+              </motion.div>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* ─── CTA ─── */}
+        <section className="relative border-t border-border/20 overflow-hidden py-24">
+          <div className="absolute inset-0 [background-image:radial-gradient(hsl(var(--border))_1px,transparent_1px)] [background-size:20px_20px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_60%,transparent_100%)] pointer-events-none" />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 -z-10 h-[300px] w-[500px] rounded-full bg-primary/20 blur-[100px] opacity-50" />
+
+          <div className="container relative z-10 mx-auto max-w-3xl px-4 sm:px-6 text-center">
+            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger}>
+              <motion.div variants={fadeUp}>
+                <Badge variant="outline" className="mb-6 rounded-full border-primary/25 bg-primary/8 px-4 py-1.5 text-sm text-primary">
+                  Start today — it&apos;s free
+                </Badge>
+              </motion.div>
+              <motion.h2 variants={fadeUp} className="text-4xl font-extrabold tracking-tight sm:text-5xl text-balance">
+                Stop chasing payments.<br />
+                <span className="bg-gradient-to-r from-primary to-teal-400 bg-clip-text text-transparent">
+                  Start doing great work.
+                </span>
+              </motion.h2>
+              <motion.p variants={fadeUp} className="mt-5 text-lg text-muted-foreground max-w-md mx-auto">
+                Join thousands of freelancers and teams using BillPartner to streamline their invoicing.
+              </motion.p>
+              <motion.div variants={fadeUp} className="mt-9 flex flex-col sm:flex-row items-center justify-center gap-3">
+                <Button asChild size="lg" className="h-12 rounded-lg px-8 font-semibold shadow-xl shadow-primary/20 transition-all hover:-translate-y-0.5">
+                  <Link href="/register">
+                    Create free account <ArrowUpRight className="ml-2 h-4 w-4" />
+                  </Link>
                 </Button>
-                <Button
-                  asChild
-                  variant="outline"
-                  size="lg"
-                  className="border-primary-foreground/40 bg-transparent text-primary-foreground hover:bg-primary-foreground hover:text-primary"
-                >
-                  <Link href="/login">Sign in</Link>
+                <Button asChild size="lg" variant="outline" className="h-12 rounded-lg px-8 font-medium border-border/50">
+                  <Link href="/login">Sign in instead</Link>
                 </Button>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
           </div>
         </section>
       </main>
 
-      <footer className="border-t py-8">
-        <div className="container mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-4 text-sm text-muted-foreground sm:flex-row sm:px-6 lg:px-8">
-          <p>© {new Date().getFullYear()} InvoiceFlow</p>
-          <p>Made for faster billing workflows</p>
+      {/* ─── Footer ─── */}
+      <footer className="border-t border-border/20 bg-background py-10">
+        <div className="container mx-auto flex max-w-6xl flex-col items-center justify-between gap-5 px-4 sm:flex-row sm:px-6 text-sm">
+          <div className="flex items-center gap-2">
+            <img src="/invoice-logo.svg" alt="BillPartner" className="h-5 w-5" />
+            <span className="font-bold tracking-tight">BillPartner</span>
+          </div>
+          <p className="text-muted-foreground text-xs">© {new Date().getFullYear()} BillPartner. All rights reserved.</p>
+          <div className="flex gap-5 font-medium text-muted-foreground text-xs">
+            <Link href="/terms" className="hover:text-foreground transition-colors">Terms</Link>
+            <Link href="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
+            <Link href="https://github.com/Himanshu-Khairnar/Invoice_Generator" className="hover:text-foreground transition-colors">GitHub</Link>
+          </div>
         </div>
       </footer>
     </div>
   );
 }
 
-function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
+// ─── Bento Card Component ───
+function BentoCard({
+  icon,
+  tag,
+  title,
+  description,
+  accent,
+  visual,
+  tall = false,
+  horizontal = false,
+}: {
+  icon: React.ReactNode;
+  tag: string;
+  title: string;
+  description: string;
+  accent: string;
+  visual?: React.ReactNode;
+  tall?: boolean;
+  horizontal?: boolean;
+}) {
   return (
-    <svg viewBox="0 0 24 24" {...props}>
-      <path
-        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-        fill="#4285F4"
-      />
-      <path
-        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-        fill="#34A853"
-      />
-      <path
-        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-        fill="#FBBC05"
-      />
-      <path
-        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-        fill="#EA4335"
-      />
-    </svg>
+    <div className={`group relative overflow-hidden rounded-2xl border border-border/40 bg-background/60 backdrop-blur-sm transition-all duration-300 hover:border-primary/30 hover:shadow-lg p-6 ${tall ? "h-full" : ""} ${horizontal ? "flex gap-5 items-start" : ""}`}>
+      <div className={`absolute inset-0 bg-gradient-to-br ${accent} opacity-70 group-hover:opacity-100 transition-opacity duration-300`} />
+      <div className={`relative z-10 ${horizontal ? "flex gap-5 items-start w-full" : ""}`}>
+        {horizontal ? (
+          <>
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-border/50 bg-background shadow-sm group-hover:scale-105 group-hover:border-primary/30 transition-all duration-300">
+              {icon}
+            </div>
+            <div>
+              <Badge variant="secondary" className="mb-2 rounded-md text-xs px-2 py-0.5 bg-primary/8 text-primary border-primary/20">
+                {tag}
+              </Badge>
+              <h3 className="text-base font-bold text-foreground">{title}</h3>
+              <p className="mt-1.5 text-sm text-muted-foreground leading-relaxed">{description}</p>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-border/50 bg-background shadow-sm group-hover:scale-105 group-hover:border-primary/30 transition-all duration-300">
+                {icon}
+              </div>
+              <Badge variant="secondary" className="rounded-md text-xs px-2 py-0.5 bg-primary/8 text-primary border-primary/20">
+                {tag}
+              </Badge>
+            </div>
+            <h3 className="text-lg font-bold text-foreground">{title}</h3>
+            <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{description}</p>
+            {visual}
+          </>
+        )}
+      </div>
+    </div>
   );
 }

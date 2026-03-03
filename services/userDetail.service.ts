@@ -54,6 +54,28 @@ export const getUserDetail = async (token?: string, type?: string) => {
   return res.json();
 };
 
+export const archiveClient = async (id: string, archived: boolean) => {
+  const res = await fetch(`/api/userdetail/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ archived }),
+  });
+  if (!res.ok) throw new Error("Failed to update client");
+  return res.json();
+};
+
+export const updateClient = async (id: string, data: Partial<ClientForm>) => {
+  const res = await fetch(`/api/userdetail/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("Failed to update client");
+  return res.json();
+};
+
 export const postUserDetail = async (data: ClientForm) => {
   const res  = await fetch(`${baseUrl}userdetail`, {
     method: "POST",

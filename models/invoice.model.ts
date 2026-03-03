@@ -63,6 +63,8 @@ const InvoiceSchema = new mongoose.Schema<IInvoice>(
     totalAmount: { type: Number, required: false, min: 0 },
     paidAmount: { type: Number, required: false, min: 0, default: 0 },
     balanceDue: { type: Number, required: false, min: 0 },
+    payOtp: { type: String, required: false },
+    payOtpExpiry: { type: Date, required: false },
   },
   { timestamps: true }
 );

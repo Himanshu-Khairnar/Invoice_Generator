@@ -2,7 +2,6 @@
 
 import {
   ChevronUp,
-  CreditCard,
   FilePlus,
   FileText,
   Home,
@@ -12,6 +11,7 @@ import {
   User2,
   Users,
 } from "lucide-react"
+import Image from "next/image"
 import { usePathname, useRouter } from "next/navigation"
 
 import {
@@ -82,11 +82,11 @@ export function AppSidebar({ user }: { user: User }) {
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <Link href="/homepage">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                  <FileText className="size-4" />
+                <div className="flex aspect-square size-8 items-center justify-center rounded-lg overflow-hidden">
+                  <Image src="/invoice-logo.svg" alt="BillPartner logo" width={32} height={32} className="size-8" />
                 </div>
-                <div className="flex flex-col gap-0.5 leading-none">
-                  <span className="font-semibold">InvoiceFlow</span>
+                <div className="flex flex-col gap-0.5 leading-none group-data-[collapsible=icon]:hidden">
+                  <span className="font-semibold">BillPartner</span>
                   <span className="text-xs text-muted-foreground">v1.0.0</span>
                 </div>
               </Link>
@@ -103,7 +103,12 @@ export function AppSidebar({ user }: { user: User }) {
               {navItems.map((item) => {
                 const isActive =
                   pathname === item.url ||
-                  (item.url !== "/homepage" && pathname.startsWith(item.url))
+                  (item.url !== "/homepage" &&
+                    item.url !== "/invoices/new" &&
+                    pathname.startsWith(item.url) &&
+                    !navItems.some(
+                      (other) => other.url !== item.url && pathname.startsWith(other.url) && other.url.startsWith(item.url)
+                    ))
                 return (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild tooltip={item.title} isActive={isActive}>
@@ -190,27 +195,8 @@ export function AppSidebar({ user }: { user: User }) {
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link href="/settings">
-                    <User2 className="mr-2 h-4 w-4" />
-                    Account
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/billing">
-                    <CreditCard className="mr-2 h-4 w-4" />
-                    Billing
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/settings">
-                    <Settings className="mr-2 h-4 w-4" />
-                    Settings
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
                 <DropdownMenuItem
-                  className="text-destructive focus:text-destructive"
+                  className="text-destructive focus:bg-destructive/10 focus:text-destructive"
                   onClick={handleSignOut}
                 >
                   <LogOut className="mr-2 h-4 w-4" />

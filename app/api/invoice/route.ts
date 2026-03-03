@@ -5,6 +5,9 @@ import Item from "@/models/item.model";
 import PersonalDetail from "@/models/userDetail.model";
 import { transporter, buildInvoiceEmail } from "@/lib/mailer";
 import { calcLineTotals, calcInvoiceTotals } from "@/lib/invoice-calc";
+import { generateInvoiceHTML } from "@/lib/invoice-html";
+import { generatePDFFromHTML } from "@/lib/generate-pdf";
+import UserImage from "@/models/userImage.model";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 
@@ -76,7 +79,7 @@ export async function POST(request: NextRequest) {
       userId: payload.userId,
       products,
       ...totals,
-    });
+    }) as any;
 
     // Update catalog items: increment timesInvoiced, add lineTotal to totalInvoiced, sync productPrice
     const catalogProducts = products.filter((p: any) => p.itemId);
@@ -110,6 +113,9 @@ export async function POST(request: NextRequest) {
           const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
           const payUrl = `${appUrl}/pay/${invoice._id}`;
 
+          const userImage = await UserImage.findOne({ userId: payload.userId }).lean();
+          const businessLogo = (userImage as any)?.bussinessLogo ?? null;
+
           const html = buildInvoiceEmail({
             invoiceNumber: invoice.invoiceNumber,
             businessName: business?.name ?? "Your Vendor",
@@ -125,11 +131,22 @@ export async function POST(request: NextRequest) {
             })),
           });
 
+          const invoiceHTML = generateInvoiceHTML(invoice, business, client, businessLogo);
+          const pdfBuffer = await generatePDFFromHTML(invoiceHTML, invoice, business, client, businessLogo);
+
           await transporter.sendMail({
-            from: `"${business?.name ?? "InvoiceApp"}" <${process.env.EMAIL_FROM}>`,
+            from: `"${business?.name ?? "BillPartner"}" <${process.env.EMAIL_FROM}>`,
             to: client.email,
+            cc: business?.email ?? undefined,
             subject: `Invoice #${invoice.invoiceNumber} — ₹${(invoice.totalAmount ?? 0).toFixed(2)} due`,
             html,
+            attachments: [
+              {
+                filename: `Invoice-${invoice.invoiceNumber}.pdf`,
+                content: pdfBuffer,
+                contentType: "application/pdf",
+              },
+            ],
           });
         }
       } catch (emailErr) {

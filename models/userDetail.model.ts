@@ -82,6 +82,10 @@ const PersonalDetailSchema = new mongoose.Schema<IPersonalDetail>(
       type: Number,
       default: 0,
     },
+    archived: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

@@ -16,9 +16,9 @@ import { Label } from "@/components/ui/label";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useRef } from "react";
-import { Plus, User, MapPin, Globe, CreditCard } from "lucide-react";
-import { postUserDetail } from "@/services/userDetail.service";
+import { useEffect, useRef } from "react";
+import { Pencil, Plus } from "lucide-react";
+import { postUserDetail, updateClient } from "@/services/userDetail.service";
 import { Separator } from "@/components/ui/separator";
 
 const schema = z.object({
@@ -81,9 +81,15 @@ export type ClientForm = z.infer<typeof schema>;
 type Props = {
   onClientCreated?: (client: ClientForm & { _id: string }) => void;
   triggerSize?: "default" | "sm" | "lg" | "icon";
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  initialData?: Partial<ClientForm>;
+  clientId?: string;
 };
 
-export default function ClientDialogBox({ onClientCreated, triggerSize = "default" }: Props = {}) {
+export default function ClientDialogBox({ onClientCreated, triggerSize = "default", open, onOpenChange, initialData, clientId }: Props = {}) {
+  const isEditMode = !!clientId;
+  const controlled = open !== undefined;
   const closeRef = useRef<HTMLButtonElement>(null);
   const {
     register,
@@ -92,11 +98,23 @@ export default function ClientDialogBox({ onClientCreated, triggerSize = "defaul
     formState: { errors },
   } = useForm<ClientForm>({
     resolver: zodResolver(schema),
+    defaultValues: initialData,
   });
+
+  useEffect(() => {
+    if (open && initialData) {
+      reset(initialData);
+    }
+  }, [open, initialData, reset]);
 
   const onSubmit = async (data: ClientForm) => {
     try {
-      const response = await postUserDetail({...data,type:"clientDetail"});
+      let response;
+      if (isEditMode) {
+        response = await updateClient(clientId, data);
+      } else {
+        response = await postUserDetail({ ...data, type: "clientDetail" });
+      }
       if (response) {
         closeRef.current?.click();
         reset();
@@ -107,34 +125,34 @@ export default function ClientDialogBox({ onClientCreated, triggerSize = "defaul
         }
       }
     } catch (error) {
-      console.error("Error creating client:", error);
+      console.error("Error saving client:", error);
     }
   };
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button size={triggerSize} className="gap-2">
-          <Plus className="h-4 w-4" /> Add Client
-        </Button>
-      </DialogTrigger>
+    <Dialog {...(controlled ? { open, onOpenChange } : {})}>
+      {!controlled && (
+        <DialogTrigger asChild>
+          <Button size={triggerSize} className="gap-2">
+            {isEditMode ? <Pencil className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
+            {isEditMode ? "Edit Client" : "Add Client"}
+          </Button>
+        </DialogTrigger>
+      )}
 
-      <DialogContent className="sm:max-w-[650px] max-h-[90vh] overflow-y-auto p-0">
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <DialogHeader className="p-6 pb-2">
-            <DialogTitle className="text-2xl">Add New Client</DialogTitle>
+      <DialogContent className="sm:max-w-[650px] max-h-[90vh] p-0 flex flex-col">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col min-h-0 flex-1">
+          <DialogHeader className="p-6 pb-2 shrink-0">
+            <DialogTitle className="text-2xl">{isEditMode ? "Edit Client" : "Add New Client"}</DialogTitle>
             <DialogDescription>
-              Fill in the client details to add them to your database.
+              {isEditMode ? "Update the client details below." : "Fill in the client details to add them to your database."}
             </DialogDescription>
           </DialogHeader>
 
-          <div className="px-6 py-4 space-y-6">
+          <div className="px-6 py-4 space-y-6 overflow-y-auto flex-1 [scrollbar-gutter:stable] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-border hover:[&::-webkit-scrollbar-thumb]:bg-muted-foreground/40">
             {/* Basic Info */}
             <div className="space-y-4">
-              <div className="flex items-center gap-2 text-sm font-semibold text-primary">
-                <User className="h-4 w-4" />
-                <span>Basic Information</span>
-              </div>
+              <p className="text-sm font-semibold">Basic Information</p>
               <Separator />
               <div className="grid gap-4">
                 <div className="grid gap-2">
@@ -158,10 +176,7 @@ export default function ClientDialogBox({ onClientCreated, triggerSize = "defaul
 
                 <div className="grid gap-2">
                   <Label htmlFor="website">Website</Label>
-                  <div className="relative">
-                    <Globe className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input id="website" {...register("website")} placeholder="https://www.client.com" className="pl-9 bg-muted/30" />
-                  </div>
+                  <Input id="website" {...register("website")} placeholder="https://www.client.com" className="bg-muted/30" />
                   {errors.website && <p className="text-xs text-destructive">{errors.website.message}</p>}
                 </div>
               </div>
@@ -169,10 +184,7 @@ export default function ClientDialogBox({ onClientCreated, triggerSize = "defaul
 
             {/* Tax Info */}
             <div className="space-y-4">
-              <div className="flex items-center gap-2 text-sm font-semibold text-primary">
-                <CreditCard className="h-4 w-4" />
-                <span>Tax & Registration</span>
-              </div>
+              <p className="text-sm font-semibold">Tax & Registration</p>
               <Separator />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="grid gap-2">
@@ -190,10 +202,7 @@ export default function ClientDialogBox({ onClientCreated, triggerSize = "defaul
 
             {/* Address Info */}
             <div className="space-y-4">
-              <div className="flex items-center gap-2 text-sm font-semibold text-primary">
-                <MapPin className="h-4 w-4" />
-                <span>Address Details</span>
-              </div>
+              <p className="text-sm font-semibold">Address Details</p>
               <Separator />
               <div className="grid gap-4">
                 <div className="grid gap-2">
@@ -232,13 +241,13 @@ export default function ClientDialogBox({ onClientCreated, triggerSize = "defaul
             </div>
           </div>
 
-          <DialogFooter className="p-6 bg-muted/20 border-t">
+          <DialogFooter className="p-6 bg-muted/20 border-t shrink-0">
             <DialogClose asChild>
               <Button ref={closeRef} variant="outline" type="button">
                 Cancel
               </Button>
             </DialogClose>
-            <Button type="submit" className="px-8">Create Client</Button>
+            <Button type="submit" className="px-8">{isEditMode ? "Save Changes" : "Create Client"}</Button>
           </DialogFooter>
         </form>
       </DialogContent>

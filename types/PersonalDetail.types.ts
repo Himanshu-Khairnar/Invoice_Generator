@@ -16,6 +16,7 @@ export interface IPersonalDetail {
     email: string;
     website?: string;
     timesInvoiced?: number;
+    archived?: boolean;
     createdAt?: Date;
     updatedAt?: Date;
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { IInvoice } from "@/types/invoice.types";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,12 +10,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { updateInvoiceStatus } from "@/services/invoice.service";
 import { generateInvoiceHTML } from "@/lib/invoice-html";
-import { AlertCircle, CheckCircle2, Clock, Download, XCircle } from "lucide-react";
-
+import {
+  AlertCircle,
+  CheckCircle2,
+  Clock,
+  Download,
+  Edit,
+  Loader2,
+  Mail,
+  XCircle,
+} from "lucide-react";
+import { toast } from "sonner";
+import Link from "next/link";
 
 interface InvoiceDetailViewProps {
   invoice: IInvoice;
@@ -35,15 +44,26 @@ export default function InvoiceDetailView({
 }: InvoiceDetailViewProps) {
   const [status, setStatus] = useState<string>(invoice.status);
   const [updating, setUpdating] = useState(false);
-  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [sendingEmail, setSendingEmail] = useState(false);
+
+  const userDetail = invoice.userDetailId as any;
+  const clientDetail = invoice.clientDetailId as any;
+  const businessLogo = (invoice.userImageId as any)?.bussinessLogo ?? null;
 
   const StatusIcon =
-    statusConfig[invoice.status as keyof typeof statusConfig]?.icon || AlertCircle;
+    statusConfig[status as keyof typeof statusConfig]?.icon || AlertCircle;
+
+  // Pre-render the invoice HTML for the inline preview
+  const previewHTML = useMemo(
+    () => generateInvoiceHTML(invoice, userDetail, clientDetail, businessLogo, false),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [invoice._id]
+  );
 
   const handleStatusChange = async (newStatus: string) => {
+    if (newStatus === status) return;
+    setUpdating(true);
     try {
-      setUpdating(true);
-      setMessage(null);
       const response = await updateInvoiceStatus(
         invoice._id as any,
         newStatus as "due" | "payment done" | "cancel" | "draft"
@@ -51,181 +71,116 @@ export default function InvoiceDetailView({
       if (response.success) {
         setStatus(newStatus);
         onInvoiceUpdate(response.data);
-        setMessage({ type: "success", text: "Status updated successfully" });
+        toast.success(`Status updated to "${statusConfig[newStatus as keyof typeof statusConfig]?.label ?? newStatus}"`);
+      } else {
+        toast.error("Failed to update status");
       }
     } catch (error: any) {
-      setMessage({ type: "error", text: error.message || "Failed to update status" });
+      toast.error(error.message || "Failed to update status");
     } finally {
       setUpdating(false);
     }
   };
 
-  const userDetail = invoice.userDetailId as any;
-  const clientDetail = invoice.clientDetailId as any;
-  const businessLogo = (invoice.userImageId as any)?.bussinessLogo ?? null;
+  const handleSendEmail = async () => {
+    setSendingEmail(true);
+    try {
+      const res = await fetch(`/api/invoice/${invoice._id}/send-email`, { method: "POST" });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        toast.success("Email sent to client successfully");
+      } else {
+        toast.error(data.error || "Failed to send email");
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Failed to send email");
+    } finally {
+      setSendingEmail(false);
+    }
+  };
+
+  const handleDownload = () => {
+    const win = window.open("", "_blank");
+    if (!win) return;
+    win.document.write(
+      generateInvoiceHTML(invoice, userDetail, clientDetail, businessLogo, true)
+    );
+    win.document.close();
+  };
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
       {/* Header */}
-      <div className="flex justify-between items-start">
+      <div className="flex flex-wrap justify-between items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Invoice {invoice.invoiceNumber}</h1>
-          <p className="text-gray-500 mt-1">
-            Date: {new Date(invoice.invoiceDate).toLocaleDateString()}
+          <h1 className="text-2xl font-bold">Invoice {invoice.invoiceNumber}</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">
+            {new Date(invoice.invoiceDate).toLocaleDateString("en-IN", {
+              day: "2-digit",
+              month: "short",
+              year: "numeric",
+            })}
           </p>
         </div>
-        <div className="flex items-center gap-3">
-          <Badge className={statusConfig[invoice.status as keyof typeof statusConfig]?.color}>
-            <StatusIcon className="w-4 h-4 mr-1" />
-            {statusConfig[invoice.status as keyof typeof statusConfig]?.label}
+
+        <div className="flex items-center gap-3 flex-wrap">
+          {/* Status badge */}
+          <Badge className={statusConfig[status as keyof typeof statusConfig]?.color}>
+            <StatusIcon className="w-3.5 h-3.5 mr-1" />
+            {statusConfig[status as keyof typeof statusConfig]?.label ?? status}
           </Badge>
+
+          {/* Status select */}
+          <Select value={status} onValueChange={handleStatusChange} disabled={updating}>
+            <SelectTrigger className="w-40 h-8 text-sm">
+              {updating ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <SelectValue placeholder="Change status" />
+              )}
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="draft">Draft</SelectItem>
+              <SelectItem value="due">Due</SelectItem>
+              <SelectItem value="payment done">Payment Done</SelectItem>
+              <SelectItem value="cancel">Cancelled</SelectItem>
+            </SelectContent>
+          </Select>
+
+          {/* Edit */}
+          <Link href={`/invoices/${invoice._id}/edit`}>
+            <Button variant="outline" size="sm">
+              <Edit className="h-3.5 w-3.5" />
+              <span className="ml-1.5">Edit</span>
+            </Button>
+          </Link>
+
+          {/* Actions */}
+          <Button variant="outline" size="sm" onClick={handleSendEmail} disabled={sendingEmail}>
+            {sendingEmail ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <Mail className="h-3.5 w-3.5" />
+            )}
+            <span className="ml-1.5">{sendingEmail ? "Sending…" : "Send Email"}</span>
+          </Button>
+
+          <Button variant="outline" size="sm" onClick={handleDownload}>
+            <Download className="h-3.5 w-3.5" />
+            <span className="ml-1.5">Download PDF</span>
+          </Button>
         </div>
       </div>
 
-      {/* Status Update */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Update Invoice Status</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex gap-4 items-end">
-            <div className="flex-1">
-              <label className="block text-sm font-medium mb-2">New Status</label>
-              <Select value={status} onValueChange={handleStatusChange} disabled={updating}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="draft">Draft</SelectItem>
-                  <SelectItem value="due">Due</SelectItem>
-                  <SelectItem value="payment done">Payment Done</SelectItem>
-                  <SelectItem value="cancel">Cancelled</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          {message && (
-            <div className={`p-3 rounded-md text-sm ${message.type === "success" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
-              {message.text}
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Invoice Details */}
-      <div className="grid grid-cols-2 gap-6">
-        <Card>
-          <CardHeader><CardTitle className="text-base">Bill From</CardTitle></CardHeader>
-          <CardContent>
-            {businessLogo && (
-              <img
-                src={businessLogo}
-                alt="Company logo"
-                style={{ maxHeight: "48px", maxWidth: "140px", objectFit: "contain", display: "block", marginBottom: "8px" }}
-              />
-            )}
-            <p className="font-semibold">{userDetail?.name}</p>
-            <p className="text-sm text-gray-600">{userDetail?.addressLine1}{userDetail?.city ? `, ${userDetail.city}` : ""}</p>
-            <p className="text-sm text-gray-600">{userDetail?.email}</p>
-            <p className="text-sm text-gray-600">{userDetail?.phoneNumber}</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader><CardTitle className="text-base">Bill To</CardTitle></CardHeader>
-          <CardContent>
-            <p className="font-semibold">{clientDetail?.name}</p>
-            <p className="text-sm text-gray-600">{clientDetail?.addressLine1}{clientDetail?.city ? `, ${clientDetail.city}` : ""}</p>
-            <p className="text-sm text-gray-600">{clientDetail?.email}</p>
-            <p className="text-sm text-gray-600">{clientDetail?.phoneNumber}</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Items */}
-      <Card>
-        <CardHeader><CardTitle className="text-base">Items</CardTitle></CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b">
-                  <th className="text-left py-2 px-2">Item</th>
-                  <th className="text-right py-2 px-2">Unit Price</th>
-                  <th className="text-right py-2 px-2">Quantity</th>
-                  <th className="text-right py-2 px-2">Tax %</th>
-                  <th className="text-right py-2 px-2">Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                {invoice.products?.map((product: any, index: number) => (
-                  <tr key={index} className="border-b">
-                    <td className="py-2 px-2">{product.productName}</td>
-                    <td className="text-right py-2 px-2">₹{product.productPrice}</td>
-                    <td className="text-right py-2 px-2">{product.quantity}</td>
-                    <td className="text-right py-2 px-2">{product.taxSlab}%</td>
-                    <td className="text-right py-2 px-2">₹{product.lineTotal}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Totals */}
-      <Card>
-        <CardContent className="pt-6">
-          <div className="space-y-2 max-w-xs ml-auto">
-            <div className="flex justify-between">
-              <span>Subtotal:</span>
-              <span>₹{invoice.subTotal}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Tax Total:</span>
-              <span>₹{invoice.taxTotal}</span>
-            </div>
-            {invoice.discountTotal ? (
-              <div className="flex justify-between">
-                <span>Discount:</span>
-                <span>-₹{invoice.discountTotal}</span>
-              </div>
-            ) : null}
-            <div className="flex justify-between border-t pt-2 font-bold text-lg">
-              <span>Total Amount:</span>
-              <span>₹{invoice.totalAmount}</span>
-            </div>
-            {invoice.paidAmount ? (
-              <>
-                <div className="flex justify-between text-green-600">
-                  <span>Paid Amount:</span>
-                  <span>₹{invoice.paidAmount}</span>
-                </div>
-                <div className="flex justify-between font-semibold">
-                  <span>Balance Due:</span>
-                  <span>₹{invoice.balanceDue}</span>
-                </div>
-              </>
-            ) : null}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Actions */}
-      <div className="flex gap-3 justify-end">
-        <Button
-          variant="outline"
-          onClick={() => {
-            const win = window.open("", "_blank");
-            if (!win) return;
-            win.document.write(generateInvoiceHTML(invoice, userDetail, clientDetail, businessLogo, true));
-            win.document.close();
-          }}
-        >
-          <Download className="mr-2 h-4 w-4" />
-          Download PDF
-        </Button>
-        <Button>Edit Invoice</Button>
+      {/* Inline invoice preview */}
+      <div className="rounded-lg border border-border overflow-hidden shadow-sm">
+        <iframe
+          srcDoc={previewHTML}
+          title={`Invoice ${invoice.invoiceNumber}`}
+          className="w-full"
+          style={{ height: "80vh", minHeight: 600 }}
+          sandbox="allow-same-origin"
+        />
       </div>
     </div>
   );

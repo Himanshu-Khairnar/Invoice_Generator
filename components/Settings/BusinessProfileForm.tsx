@@ -1,18 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
 import {
   Building2,
   CheckCircle2,
@@ -96,103 +89,81 @@ function ProfileSummary({
   onEdit: () => void;
 }) {
   return (
-    <Card className="border-primary/20 bg-primary/5">
-      <CardHeader className="pb-3">
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 overflow-hidden">
-              {logo ? (
-                <img src={logo} alt="Company logo" style={{ width: "100%", height: "100%", objectFit: "contain", display: "block" }} />
-              ) : (
-                <Building2 className="h-5 w-5 text-primary" />
-              )}
-            </div>
-            <div>
-              <CardTitle className="text-base leading-tight">{detail.name}</CardTitle>
-              <Badge variant="secondary" className="mt-1 text-xs font-normal">
-                <CheckCircle2 className="mr-1 h-3 w-3 text-primary" />
-                Profile active
-              </Badge>
-            </div>
-          </div>
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-1.5 shrink-0"
-            onClick={onEdit}
-          >
-            <Edit3 className="h-3.5 w-3.5" />
-            Edit
-          </Button>
-        </div>
-      </CardHeader>
-
-      <CardContent className="space-y-3 text-sm">
-        <Separator />
-
-        <div className="grid gap-3 sm:grid-cols-2">
-          {/* Contact */}
-          <div className="space-y-1.5">
-            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Contact
-            </p>
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <Mail className="h-3.5 w-3.5 shrink-0" />
-              <span>{detail.email}</span>
-            </div>
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <Phone className="h-3.5 w-3.5 shrink-0" />
-              <span>{detail.phoneNumber}</span>
-            </div>
-            {detail.website && (
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Globe className="h-3.5 w-3.5 shrink-0" />
-                <span>{detail.website}</span>
-              </div>
+    <div className="border rounded-lg border-border overflow-hidden">
+      {/* Header */}
+      <div className="flex items-center justify-between gap-4 px-6 py-5 bg-muted/30">
+        <div className="flex items-center gap-4">
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl border bg-background overflow-hidden shadow-sm">
+            {logo ? (
+              <img src={logo} alt="Company logo" style={{ width: "100%", height: "100%", objectFit: "contain", display: "block" }} />
+            ) : (
+              <Building2 className="h-6 w-6 text-muted-foreground" />
             )}
           </div>
+          <div>
+            <p className="font-semibold text-lg leading-tight">{detail.name}</p>
+            {detail.website && (
+              <a href={detail.website} target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 mt-0.5">
+                <Globe className="h-3 w-3" />{detail.website}
+              </a>
+            )}
+          </div>
+        </div>
+        <Button variant="ghost" size="icon" className="shrink-0" onClick={onEdit}>
+          <Edit3 className="h-4 w-4" />
+        </Button>
+      </div>
 
-          {/* Address */}
-          <div className="space-y-1.5">
-            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Address
-            </p>
-            <div className="flex items-start gap-2 text-muted-foreground">
-              <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-              <span>
-                {detail.addressLine1}
-                {detail.addressLine2 ? `, ${detail.addressLine2}` : ""}
-                <br />
-                {detail.city}, {detail.state} {detail.postalCode}
-                <br />
-                {detail.country}
-              </span>
-            </div>
+      {/* Body */}
+      <div className="grid divide-y sm:divide-y-0 sm:grid-cols-3 sm:divide-x divide-border">
+        {/* Contact */}
+        <div className="px-6 py-4 space-y-2">
+          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Contact</p>
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Mail className="h-3.5 w-3.5 shrink-0" />
+            <span className="truncate">{detail.email}</span>
+          </div>
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Phone className="h-3.5 w-3.5 shrink-0" />
+            <span>{detail.phoneNumber}</span>
           </div>
         </div>
 
-        {/* Tax info */}
-        {(detail.gstin || detail.cin) && (
-          <>
-            <Separator />
-            <div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
-              {detail.gstin && (
-                <span>
-                  <span className="font-semibold text-foreground">GSTIN</span>{" "}
-                  {detail.gstin}
-                </span>
-              )}
-              {detail.cin && (
-                <span>
-                  <span className="font-semibold text-foreground">CIN</span>{" "}
-                  {detail.cin}
-                </span>
-              )}
+        {/* Address */}
+        <div className="px-6 py-4 space-y-2">
+          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Address</p>
+          <div className="flex items-start gap-2 text-sm text-muted-foreground">
+            <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+            <span>
+              {detail.addressLine1}{detail.addressLine2 ? `, ${detail.addressLine2}` : ""}<br />
+              {detail.city}, {detail.state} — {detail.postalCode}<br />
+              {detail.country}
+            </span>
+          </div>
+        </div>
+
+        {/* Tax */}
+        <div className="px-6 py-4 space-y-2">
+          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Tax & Registration</p>
+          {detail.gstin ? (
+            <div className="text-sm">
+              <span className="text-muted-foreground">GSTIN </span>
+              <span className="font-medium tracking-wide">{detail.gstin}</span>
             </div>
-          </>
-        )}
-      </CardContent>
-    </Card>
+          ) : (
+            <p className="text-sm text-muted-foreground/50">No GSTIN added</p>
+          )}
+          {detail.cin ? (
+            <div className="text-sm">
+              <span className="text-muted-foreground">CIN </span>
+              <span className="font-medium tracking-wide">{detail.cin}</span>
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground/50">No CIN added</p>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -310,212 +281,225 @@ export default function BusinessProfileForm({ initial, initialLogo, onSaved }: P
       {/* ── Edit form ── */}
       {editing && (
         <div className="space-y-6">
-          {/* Business Identity */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center gap-2">
-                <Building2 className="h-5 w-5 text-primary" />
-                <CardTitle>
-                  {savedDetail ? "Edit Business Profile" : "Set Up Business Profile"}
-                </CardTitle>
-              </div>
-              <CardDescription>
-                This information appears on all invoices you generate.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-4 sm:grid-cols-2">
-                {/* Logo upload */}
-                <div className="sm:col-span-2 space-y-1.5">
-                  <Label>Company Logo</Label>
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-lg border border-dashed bg-muted overflow-hidden">
-                      {logo ? (
-                        <img
-                          src={logo}
-                          alt="Logo preview"
-                          style={{ width: "100%", height: "100%", objectFit: "contain", display: "block" }}
-                        />
-                      ) : (
-                        <ImagePlus className="h-7 w-7 text-muted-foreground" />
-                      )}
-                    </div>
-                    <div className="space-y-2">
-                      <label
-                        htmlFor="bp-logo"
-                        className="inline-flex cursor-pointer items-center gap-1.5 rounded-md border border-input bg-background px-3 py-1.5 text-sm font-medium shadow-sm hover:bg-accent hover:text-accent-foreground"
-                      >
-                        <ImagePlus className="h-3.5 w-3.5" />
-                        {logo ? "Change Logo" : "Upload Logo"}
-                        <input
-                          id="bp-logo"
-                          type="file"
-                          accept="image/*"
-                          className="sr-only"
-                          onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (!file) return;
-                            const reader = new FileReader();
-                            reader.onload = () => setLogo(reader.result as string);
-                            reader.readAsDataURL(file);
-                          }}
-                        />
-                      </label>
-                      {logo && (
-                        <button
-                          type="button"
-                          onClick={() => setLogo("")}
-                          className="flex items-center gap-1 text-xs text-muted-foreground hover:text-destructive"
-                        >
-                          <X className="h-3 w-3" />
-                          Remove
-                        </button>
-                      )}
-                      <p className="text-xs text-muted-foreground">
-                        PNG, JPG or SVG. Displayed on invoices.
-                      </p>
-                    </div>
+          <div className="grid gap-6 lg:grid-cols-3">
+
+            {/* ── Left column: Identity + Address ── */}
+            <div className="lg:col-span-2 space-y-6">
+
+              {/* Business Identity */}
+              <div className="border rounded-lg border-border">
+                <div className="px-6 py-4 border-b border-border">
+                  <p className="font-semibold">
+                    {savedDetail ? "Edit Business Profile" : "Set Up Business Profile"}
+                  </p>
+                  <p className="text-sm text-muted-foreground mt-0.5">
+                    This information appears on all invoices you generate.
+                  </p>
+                </div>
+                <div className="px-6 py-5 grid gap-4 sm:grid-cols-2">
+                  <div className="sm:col-span-2 space-y-1.5">
+                    <Label htmlFor="bp-name">Business / Company Name <span className="text-destructive">*</span></Label>
+                    <Input
+                      id="bp-name"
+                      placeholder="Acme Pvt. Ltd."
+                      value={form.name}
+                      onChange={(e) => set("name", e.target.value)}
+                      className="bg-muted/30"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="bp-email">Business Email <span className="text-destructive">*</span></Label>
+                    <Input
+                      id="bp-email"
+                      type="email"
+                      placeholder="billing@acme.com"
+                      value={form.email}
+                      onChange={(e) => set("email", e.target.value)}
+                      className="bg-muted/30"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="bp-phone">Phone Number <span className="text-destructive">*</span></Label>
+                    <Input
+                      id="bp-phone"
+                      type="tel"
+                      placeholder="+91 98765 43210"
+                      value={form.phoneNumber}
+                      onChange={(e) => set("phoneNumber", e.target.value)}
+                      className="bg-muted/30"
+                    />
+                  </div>
+                  <div className="sm:col-span-2 space-y-1.5">
+                    <Label htmlFor="bp-website">Website</Label>
+                    <Input
+                      id="bp-website"
+                      placeholder="https://acme.com"
+                      value={form.website}
+                      onChange={(e) => set("website", e.target.value)}
+                      className="bg-muted/30"
+                    />
                   </div>
                 </div>
+              </div>
 
-                <div className="sm:col-span-2 space-y-1.5">
-                  <Label htmlFor="bp-name">Business / Company Name *</Label>
-                  <Input
-                    id="bp-name"
-                    placeholder="Acme Pvt. Ltd."
-                    value={form.name}
-                    onChange={(e) => set("name", e.target.value)}
-                  />
+              {/* Address */}
+              <div className="border rounded-lg border-border">
+                <div className="px-6 py-4 border-b border-border">
+                  <p className="font-semibold">Address</p>
                 </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="bp-email">Business Email *</Label>
-                  <Input
-                    id="bp-email"
-                    type="email"
-                    placeholder="billing@acme.com"
-                    value={form.email}
-                    onChange={(e) => set("email", e.target.value)}
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="bp-phone">Phone Number *</Label>
-                  <Input
-                    id="bp-phone"
-                    type="tel"
-                    placeholder="+91 98765 43210"
-                    value={form.phoneNumber}
-                    onChange={(e) => set("phoneNumber", e.target.value)}
-                  />
-                </div>
-                <div className="sm:col-span-2 space-y-1.5">
-                  <Label htmlFor="bp-website">Website</Label>
-                  <Input
-                    id="bp-website"
-                    placeholder="https://acme.com"
-                    value={form.website}
-                    onChange={(e) => set("website", e.target.value)}
-                  />
+                <div className="px-6 py-5 grid gap-4 sm:grid-cols-4">
+                  <div className="sm:col-span-4 space-y-1.5">
+                    <Label htmlFor="bp-addr1">Address Line 1 <span className="text-destructive">*</span></Label>
+                    <Input
+                      id="bp-addr1"
+                      placeholder="123, MG Road"
+                      value={form.addressLine1}
+                      onChange={(e) => set("addressLine1", e.target.value)}
+                      className="bg-muted/30"
+                    />
+                  </div>
+                  <div className="sm:col-span-4 space-y-1.5">
+                    <Label htmlFor="bp-addr2">Address Line 2</Label>
+                    <Input
+                      id="bp-addr2"
+                      placeholder="Suite 4B, Tower 1"
+                      value={form.addressLine2}
+                      onChange={(e) => set("addressLine2", e.target.value)}
+                      className="bg-muted/30"
+                    />
+                  </div>
+                  <div className="sm:col-span-2 space-y-1.5">
+                    <Label htmlFor="bp-city">City <span className="text-destructive">*</span></Label>
+                    <Input
+                      id="bp-city"
+                      placeholder="Mumbai"
+                      value={form.city}
+                      onChange={(e) => set("city", e.target.value)}
+                      className="bg-muted/30"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="bp-state">State <span className="text-destructive">*</span></Label>
+                    <Input
+                      id="bp-state"
+                      placeholder="Maharashtra"
+                      value={form.state}
+                      onChange={(e) => set("state", e.target.value)}
+                      className="bg-muted/30"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="bp-postal">Postal Code <span className="text-destructive">*</span></Label>
+                    <Input
+                      id="bp-postal"
+                      placeholder="400001"
+                      value={form.postalCode}
+                      onChange={(e) => set("postalCode", e.target.value)}
+                      className="bg-muted/30"
+                    />
+                  </div>
+                  <div className="sm:col-span-2 space-y-1.5">
+                    <Label htmlFor="bp-country">Country <span className="text-destructive">*</span></Label>
+                    <Input
+                      id="bp-country"
+                      placeholder="India"
+                      value={form.country}
+                      onChange={(e) => set("country", e.target.value)}
+                      className="bg-muted/30"
+                    />
+                  </div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
 
-          {/* Address */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Address</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="sm:col-span-2 space-y-1.5">
-                  <Label htmlFor="bp-addr1">Address Line 1 *</Label>
-                  <Input
-                    id="bp-addr1"
-                    placeholder="123, MG Road"
-                    value={form.addressLine1}
-                    onChange={(e) => set("addressLine1", e.target.value)}
-                  />
+            {/* ── Right column: Logo + Tax ── */}
+            <div className="space-y-6">
+
+              {/* Logo upload */}
+              <div className="border rounded-lg border-border">
+                <div className="px-6 py-4 border-b border-border">
+                  <p className="font-semibold">Company Logo</p>
+                  <p className="text-sm text-muted-foreground mt-0.5">Displayed on invoices.</p>
                 </div>
-                <div className="sm:col-span-2 space-y-1.5">
-                  <Label htmlFor="bp-addr2">Address Line 2</Label>
-                  <Input
-                    id="bp-addr2"
-                    placeholder="Suite 4B, Tower 1"
-                    value={form.addressLine2}
-                    onChange={(e) => set("addressLine2", e.target.value)}
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="bp-city">City *</Label>
-                  <Input
-                    id="bp-city"
-                    placeholder="Mumbai"
-                    value={form.city}
-                    onChange={(e) => set("city", e.target.value)}
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="bp-state">State *</Label>
-                  <Input
-                    id="bp-state"
-                    placeholder="Maharashtra"
-                    value={form.state}
-                    onChange={(e) => set("state", e.target.value)}
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="bp-postal">Postal Code *</Label>
-                  <Input
-                    id="bp-postal"
-                    placeholder="400001"
-                    value={form.postalCode}
-                    onChange={(e) => set("postalCode", e.target.value)}
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="bp-country">Country *</Label>
-                  <Input
-                    id="bp-country"
-                    placeholder="India"
-                    value={form.country}
-                    onChange={(e) => set("country", e.target.value)}
-                  />
+                <div className="px-6 py-5 space-y-4">
+                  <div className="flex items-center justify-center rounded-lg border border-dashed bg-muted overflow-hidden h-32">
+                    {logo ? (
+                      <img
+                        src={logo}
+                        alt="Logo preview"
+                        style={{ width: "100%", height: "100%", objectFit: "contain", display: "block" }}
+                      />
+                    ) : (
+                      <ImagePlus className="h-8 w-8 text-muted-foreground" />
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <label
+                      htmlFor="bp-logo"
+                      className="flex-1 text-center cursor-pointer inline-flex justify-center items-center gap-1.5 rounded-md border border-input bg-background px-3 py-1.5 text-sm font-medium shadow-sm hover:bg-accent hover:text-accent-foreground"
+                    >
+                      <ImagePlus className="h-3.5 w-3.5" />
+                      {logo ? "Change" : "Upload"}
+                      <input
+                        id="bp-logo"
+                        type="file"
+                        accept="image/*"
+                        className="sr-only"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+                          const reader = new FileReader();
+                          reader.onload = () => setLogo(reader.result as string);
+                          reader.readAsDataURL(file);
+                        }}
+                      />
+                    </label>
+                    {logo && (
+                      <button
+                        type="button"
+                        onClick={() => setLogo("")}
+                        className="inline-flex items-center gap-1 rounded-md border border-input px-3 py-1.5 text-sm text-muted-foreground hover:text-destructive hover:border-destructive/50"
+                      >
+                        <X className="h-3.5 w-3.5" />
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                  <p className="text-xs text-muted-foreground text-center">PNG, JPG or SVG</p>
                 </div>
               </div>
-            </CardContent>
-          </Card>
 
-          {/* Tax & Registration */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Tax & Registration</CardTitle>
-              <CardDescription>
-                Optional — shown on invoices where applicable.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-1.5">
-                  <Label htmlFor="bp-gstin">GSTIN</Label>
-                  <Input
-                    id="bp-gstin"
-                    placeholder="27AADCB2230M1ZX"
-                    value={form.gstin}
-                    onChange={(e) => set("gstin", e.target.value)}
-                  />
+              {/* Tax & Registration */}
+              <div className="border rounded-lg border-border">
+                <div className="px-6 py-4 border-b border-border">
+                  <p className="font-semibold">Tax & Registration</p>
+                  <p className="text-sm text-muted-foreground mt-0.5">Optional — shown on invoices.</p>
                 </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="bp-cin">CIN</Label>
-                  <Input
-                    id="bp-cin"
-                    placeholder="U72900MH2021PTC123456"
-                    value={form.cin}
-                    onChange={(e) => set("cin", e.target.value)}
-                  />
+                <div className="px-6 py-5 space-y-4">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="bp-gstin">GSTIN</Label>
+                    <Input
+                      id="bp-gstin"
+                      placeholder="27AADCB2230M1ZX"
+                      value={form.gstin}
+                      onChange={(e) => set("gstin", e.target.value)}
+                      className="bg-muted/30 uppercase"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="bp-cin">CIN</Label>
+                    <Input
+                      id="bp-cin"
+                      placeholder="U72900MH2021PTC123456"
+                      value={form.cin}
+                      onChange={(e) => set("cin", e.target.value)}
+                      className="bg-muted/30 uppercase"
+                    />
+                  </div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Error */}
           {error && (
@@ -524,9 +508,7 @@ export default function BusinessProfileForm({ initial, initialLogo, onSaved }: P
             </p>
           )}
 
-          <Separator />
-
-          <div className="flex items-center justify-end gap-2">
+          <div className="flex items-center justify-end gap-2 pt-2">
             {savedDetail && (
               <Button variant="outline" onClick={handleCancel} disabled={saving}>
                 Cancel

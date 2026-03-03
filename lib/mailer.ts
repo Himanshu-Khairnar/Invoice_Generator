@@ -1,5 +1,57 @@
 import nodemailer from "nodemailer";
 
+export function buildOtpEmail({
+  otp,
+  purpose,
+  name,
+}: {
+  otp: string;
+  purpose: "login" | "payment";
+  name?: string;
+}): string {
+  const title = purpose === "login" ? "Your sign-in code" : "Confirm your payment";
+  const body =
+    purpose === "login"
+      ? "Use the code below to sign in to your account."
+      : "Use the code below to confirm your payment. Once verified, the invoice will be marked as paid.";
+
+  return `<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"/></head>
+<body style="margin:0;padding:0;background:#f4f6f9;font-family:Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f6f9;padding:40px 0;">
+    <tr><td align="center">
+      <table width="480" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.08);">
+        <tr>
+          <td style="background:#1a1a2e;padding:28px 36px;">
+            <h1 style="margin:0;color:#ffffff;font-size:20px;">${title}</h1>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:36px;">
+            ${name ? `<p style="margin:0 0 16px;color:#4a5568;font-size:15px;">Hi <strong>${name}</strong>,</p>` : ""}
+            <p style="margin:0 0 28px;color:#4a5568;font-size:15px;">${body}</p>
+            <div style="background:#f7fafc;border:2px dashed #e2e8f0;border-radius:10px;padding:24px;text-align:center;margin-bottom:28px;">
+              <p style="margin:0 0 6px;font-size:12px;color:#a0aec0;letter-spacing:.08em;text-transform:uppercase;font-weight:600;">Your OTP code</p>
+              <p style="margin:0;font-size:40px;font-weight:800;letter-spacing:10px;color:#1a1a2e;">${otp}</p>
+            </div>
+            <p style="margin:0;font-size:13px;color:#a0aec0;text-align:center;">
+              This code expires in <strong>10 minutes</strong>. Do not share it with anyone.
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td style="background:#f7fafc;padding:16px 36px;text-align:center;">
+            <p style="margin:0;color:#a0aec0;font-size:12px;">If you didn't request this, you can safely ignore this email.</p>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+}
+
 export const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST,
   port: Number(process.env.EMAIL_PORT) || 587,
@@ -105,7 +157,7 @@ export function buildInvoiceEmail({
         <!-- Footer -->
         <tr>
           <td style="background:#f7fafc;padding:20px 36px;text-align:center;">
-            <p style="margin:0;color:#a0aec0;font-size:12px;">This email was sent by ${businessName} via InvoiceApp.</p>
+            <p style="margin:0;color:#a0aec0;font-size:12px;">This email was sent by ${businessName} via BillPartner.</p>
           </td>
         </tr>
 

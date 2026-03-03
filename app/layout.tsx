@@ -13,8 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "InvoiceFlow | Modern Invoicing for Small Businesses",
-  description: "Create, manage, and track professional invoices in seconds with InvoiceFlow.",
+  title: "BillPartner | Modern Invoicing for Small Businesses",
+  description: "Create, manage, and track professional invoices in seconds with BillPartner.",
+  icons: { icon: "/invoice-logo.svg" },
 };
 
 export default function RootLayout({
