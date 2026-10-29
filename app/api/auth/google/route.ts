@@ -1,12 +1,13 @@
+import { getGoogleRedirectUri } from "@/lib/app-url";
 import { NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET(req: Request) {
   // Generate a random state for CSRF protection
   const state = crypto.randomUUID();
 
   const params = new URLSearchParams({
     client_id: process.env.GOOGLE_CLIENT_ID!,
-    redirect_uri: process.env.GOOGLE_REDIRECT_URI!,
+    redirect_uri: getGoogleRedirectUri(req),
     response_type: "code",
     scope: "openid email profile",
     state,

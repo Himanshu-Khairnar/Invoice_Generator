@@ -1,3 +1,4 @@
+import { getAppOrigin } from "@/lib/app-url";
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import Invoice from "@/models/invoice.model";
@@ -64,7 +65,7 @@ export async function POST(
       );
     }
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    const appUrl = getAppOrigin(request);
     const payUrl = `${appUrl}/pay/${id}`;
     const businessLogo = (userImage as any)?.bussinessLogo ?? null;
 

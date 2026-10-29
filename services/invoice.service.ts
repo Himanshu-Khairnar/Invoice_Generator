@@ -1,5 +1,5 @@
 const baseUrl =
-  process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000/api/";
+  "/api/";
 
 export const getInvoices = async (token?: string) => {
   const headers: HeadersInit = {

@@ -1,6 +1,6 @@
 import { ClientForm } from "@/components/Client/ClientDialogBox";
 
-const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000/api/";
+const baseUrl = "/api/";
 
 export type BusinessProfileForm = {
   name: string;

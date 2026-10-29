@@ -168,7 +168,7 @@ function ProfileSummary({
 }
 
 // ── Main component ────────────────────────────────────────────────────────────
-const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000/api/";
+const baseUrl = "/api/";
 
 export default function BusinessProfileForm({ initial, initialLogo, onSaved }: Props) {
   const [editing, setEditing] = useState(!initial); // open form if no profile yet

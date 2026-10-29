@@ -1,3 +1,4 @@
+import { getAppOrigin } from "@/lib/app-url";
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import Invoice from "@/models/invoice.model";
@@ -110,7 +111,7 @@ export async function POST(request: NextRequest) {
         ]);
 
         if (client?.email) {
-          const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+          const appUrl = getAppOrigin(request);
           const payUrl = `${appUrl}/pay/${invoice._id}`;
 
           const userImage = await UserImage.findOne({ userId: payload.userId }).lean();
